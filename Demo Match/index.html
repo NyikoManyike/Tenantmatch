@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TenantMatch — The Trusted Rental Operating System for Gauteng</title>
+  <meta name="description" content="Replace WhatsApp chaos with one secure, reusable tenant profile. For landlords, agents, and tenants in Gauteng.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0A3D62',
+            primaryDark: '#072840',
+            accent: '#F7B731',
+            accentLight: '#FBD984',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.6s ease-out',
+            'slide-up': 'slideUp 0.6s ease-out',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+          },
+        },
+      },
+    }
+  </script>
+  
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="font-sans text-gray-800 antialiased">
+  
+  <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <a href="index.html" class="flex items-center space-x-2">
+          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+          </div>
+          <span class="text-xl font-bold text-primary">TenantMatch</span>
+        </a>
+        
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#features" class="text-gray-600 hover:text-primary transition-colors">Features</a>
+          <a href="#how-it-works" class="text-gray-600 hover:text-primary transition-colors">How It Works</a>
+          <a href="#pricing" class="text-gray-600 hover:text-primary transition-colors">Pricing</a>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+          <a href="auth.html?mode=signin" class="text-gray-600 hover:text-primary font-medium transition-colors">Sign In</a>
+          <a href="auth.html?mode=signup" class="bg-primary hover:bg-primaryDark text-white px-4 py-2 rounded-xl font-medium transition-colors">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="relative pt-32 pb-20 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary via-primaryDark to-gray-900"></div>
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute top-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-10 left-20 w-64 h-64 bg-white/5 rounded-full blur-2xl"></div>
+      <div class="absolute top-40 left-1/4 w-32 h-32 bg-accent/20 rounded-2xl rotate-12 blur-xl"></div>
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200h60v60H0V0zm1%201h58v58H1V1z%22%20fill%3D%22none%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.03)%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E')]"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="text-center lg:text-left animate-fade-in">
+          <div class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur rounded-full text-white/80 text-sm mb-6">
+            <span class="w-2 h-2 bg-accent rounded-full mr-2 animate-pulse"></span>
+            Trusted by Gauteng Landlords & Tenants
+          </div>
+          
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+            The Rental OS for
+            <span class="text-accent">Gauteng</span>
+          </h1>
+          
+          <p class="text-lg text-white/80 mb-8 max-w-xl mx-auto lg:mx-0">
+            Replace WhatsApp chaos with one secure, reusable tenant profile. 
+            Apply professionally, manage properties confidently.
+          </p>
+          
+          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <a href="auth.html?mode=signup" class="bg-accent hover:bg-accentLight text-gray-900 px-6 py-3 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg">
+              Start Free — No Card Needed
+            </a>
+            <a href="#features" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-medium transition-all backdrop-blur">
+              See How It Works
+            </a>
+          </div>
+          
+          <p class="text-white/60 text-sm mt-4">
+            Free forever tier • Cancel anytime • POPIA Compliant
+          </p>
+        </div>
+        
+        <div class="relative animate-slide-up" style="animation-delay: 0.2s;">
+          <div class="bg-gray-900/80 backdrop-blur rounded-2xl shadow-2xl border border-white/10 overflow-hidden">
+            <div class="bg-gray-800 px-4 py-3 flex items-center gap-2">
+              <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+              <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+              <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+              <div class="flex-1 text-center">
+                <span class="text-gray-400 text-xs">TenantMatch Dashboard</span>
+              </div>
+            </div>
+            <div class="p-6 space-y-4">
+              <div class="grid grid-cols-3 gap-4">
+                <div class="bg-primary/30 rounded-xl p-4">
+                  <div class="text-2xl font-bold text-white">12</div>
+                  <div class="text-xs text-white/60">Properties</div>
+                </div>
+                <div class="bg-primary/30 rounded-xl p-4">
+                  <div class="text-2xl font-bold text-accent">48</div>
+                  <div class="text-xs text-white/60">Applications</div>
+                </div>
+                <div class="bg-primary/30 rounded-xl p-4">
+                  <div class="text-2xl font-bold text-green-400">34</div>
+                  <div class="text-xs text-white/60">Approved</div>
+                </div>
+              </div>
+              <div class="bg-gray-800/50 rounded-xl p-4 border border-white/5">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-accent to-orange-400 rounded-full"></div>
+                  <div class="flex-1">
+                    <div class="text-white font-medium">Sarah M.</div>
+                    <div class="text-xs text-white/50">2 Bed • Sandton • R12,500</div>
+                  </div>
+                  <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">Verified</span>
+                </div>
+              </div>
+              <div class="bg-gray-800/50 rounded-xl p-4 border border-white/5">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full"></div>
+                  <div class="flex-1">
+                    <div class="text-white font-medium">James K.</div>
+                    <div class="text-xs text-white/50">1 Bed • Rosebank • R8,200</div>
+                  </div>
+                  <span class="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">Pending</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="absolute -top-4 -right-4 bg-white rounded-xl shadow-lg p-3 animate-float">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <span class="text-sm font-medium text-gray-700">Documents Verified</span>
+            </div>
+          </div>
+          
+          <div class="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-lg p-3 animate-float" style="animation-delay: 3s;">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <span class="text-sm font-medium text-gray-700">R99/mo Growth</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why TenantMatch?</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">The rental market in Gauteng needs better. We fixed it.</p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+          <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-6">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">WhatsApp Chaos</h3>
+          <p class="text-gray-600">Endless message threads, lost documents, repeated requests. It's inefficient and stressful for everyone.</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+          <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-6">
+            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">Repeated Documents</h3>
+          <p class="text-gray-600">Tenants upload the same ID, payslips, and bank statements for every single application. Waste of time.</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">Blind Applications</h3>
+          <p class="text-gray-600">Landlords can't verify tenant information. Bad tenants slip through. Good tenants get ignored.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How TenantMatch Works</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">Three simple steps to transform your rental experience</p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8 relative">
+        <div class="hidden md:block absolute top-24 left-1/4 right-1/4 h-0.5 bg-gradient-to-r from-primary via-accent to-primary"></div>
+        
+        <div class="relative text-center">
+          <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg relative z-10">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">1. Upload Once</h3>
+          <p class="text-gray-600">Tenants create a profile and upload ID, payslips, bank statements — verified and stored securely.</p>
+        </div>
+        
+        <div class="relative text-center">
+          <div class="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg relative z-10">
+            <svg class="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">2. Apply Fast</h3>
+          <p class="text-gray-600">Browse properties, apply with one click using your reusable profile. Landlords see verified data instantly.</p>
+        </div>
+        
+        <div class="relative text-center">
+          <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg relative z-10">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">3. Move In</h3>
+          <p class="text-gray-600">Get approved, sign your lease digitally, and move in. No more chaos, just professional renting.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Everything You Need</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">Powerful features for landlords, agents, and tenants</p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow">
+          <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Verified Profiles</h3>
+          <p class="text-gray-600 text-sm">Documents verified once, reusable forever. No more repeated uploads.</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow">
+          <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Property Management</h3>
+          <p class="text-gray-600 text-sm">Manage unlimited properties and units. Track applications, leases, and maintenance.</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow">
+          <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Application Tracking</h3>
+          <p class="text-gray-600 text-sm">Apply or receive applications with status tracking. Approve or reject with one click.</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow">
+          <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Maintenance Requests</h3>
+          <p class="text-gray-600 text-sm">Tenants submit requests, landlords track and resolve. Complete visibility.</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Secure Storage</h3>
+          <p class="text-gray-600 text-sm">Documents stored securely with Supabase. POPIA compliant. Your data is safe.</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow">
+          <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Analytics Dashboard</h3>
+          <p class="text-gray-600 text-sm">Track applications, approval rates, occupancy. Make data-driven decisions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">Start free, upgrade when you're ready. Cancel anytime.</p>
+        <div class="inline-flex items-center bg-accent/20 px-4 py-2 rounded-full mt-4">
+          <span class="text-accent font-medium">Save 20%</span>
+          <span class="text-gray-600 ml-2">with annual billing</span>
+        </div>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-gray-50 rounded-2xl p-6 border-2 border-transparent hover:border-primary transition-colors">
+          <div class="text-center mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Free</h3>
+            <div class="text-4xl font-bold text-gray-900">R0</div>
+            <div class="text-gray-500">/month</div>
+          </div>
+          <ul class="space-y-3 mb-6">
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>1 Property</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>4 Units</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>5 GB Storage</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Basic profiles</li>
+          </ul>
+          <a href="auth.html?mode=signup&tier=free" class="block w-full bg-primary text-white text-center py-3 rounded-xl font-medium hover:bg-primaryDark transition-colors">Get Started</a>
+        </div>
+        
+        <div class="bg-white rounded-2xl p-6 border-2 border-accent relative shadow-lg">
+          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-accent text-gray-900 px-3 py-1 rounded-full text-sm font-medium">Popular</div>
+          <div class="text-center mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Growth</h3>
+            <div class="text-4xl font-bold text-gray-900">R99</div>
+            <div class="text-gray-500">/month</div>
+          </div>
+          <ul class="space-y-3 mb-6">
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>3 Properties</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>12 Units</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>10 GB Storage</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Unlimited docs</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Priority apps</li>
+          </ul>
+          <a href="auth.html?mode=signup&tier=growth" class="block w-full bg-accent text-gray-900 text-center py-3 rounded-xl font-medium hover:bg-accentLight transition-colors">Start Free Trial</a>
+        </div>
+        
+        <div class="bg-gray-50 rounded-2xl p-6 border-2 border-transparent hover:border-primary transition-colors">
+          <div class="text-center mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Pro</h3>
+            <div class="text-4xl font-bold text-gray-900">R299</div>
+            <div class="text-gray-500">/month</div>
+          </div>
+          <ul class="space-y-3 mb-6">
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>10 Properties</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>10 Units/property</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>10 GB Storage</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Advanced analytics</li>
+            <li class="flex items-center text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Agent access</li>
+          </ul>
+          <a href="auth.html?mode=signup&tier=pro" class="block w-full bg-primary text-white text-center py-3 rounded-xl font-medium hover:bg-primaryDark transition-colors">Get Pro</a>
+        </div>
+        
+        <div class="bg-gray-900 rounded-2xl p-6 text-white relative">
+          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-accent to-orange-400 text-gray-900 px-3 py-1 rounded-full text-sm font-medium">Best Value</div>
+          <div class="text-center mb-6">
+            <h3 class="text-lg font-semibold mb-2">VIP AI</h3>
+            <div class="text-4xl font-bold">R499+</div>
+            <div class="text-gray-400">/month</div>
+          </div>
+          <ul class="space-y-3 mb-6">
+            <li class="flex items-center text-sm text-gray-300"><svg class="w-5 h-5 text-accent mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Unlimited Properties</li>
+            <li class="flex items-center text-sm text-gray-300"><svg class="w-5 h-5 text-accent mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Unlimited Units</li>
+            <li class="flex items-center text-sm text-gray-300"><svg class="w-5 h-5 text-accent mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Unlimited Storage</li>
+            <li class="flex items-center text-sm text-gray-300"><svg class="w-5 h-5 text-accent mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>AI Applicant Ranking</li>
+            <li class="flex items-center text-sm text-gray-300"><svg class="w-5 h-5 text-accent mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>White-label branding</li>
+          </ul>
+          <a href="auth.html?mode=signup&tier=vip" class="block w-full bg-gradient-to-r from-accent to-orange-400 text-gray-900 text-center py-3 rounded-xl font-medium hover:opacity-90 transition-opacity">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-primary">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="flex flex-wrap justify-center gap-6 mb-10">
+        <div class="flex items-center text-white/80"><svg class="w-6 h-6 mr-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>POPIA Compliant</div>
+        <div class="flex items-center text-white/80"><svg class="w-6 h-6 mr-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>Gauteng-First</div>
+        <div class="flex items-center text-white/80"><svg class="w-6 h-6 mr-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>Secure & Encrypted</div>
+      </div>
+      
+      <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Ready to transform your rental experience?</h2>
+      <p class="text-lg text-white/80 mb-8 max-w-xl mx-auto">Join hundreds of landlords and tenants already using TenantMatch in Gauteng.</p>
+      
+      <a href="auth.html?mode=signup" class="bg-accent hover:bg-accentLight text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg inline-block">Start Free — No Card Needed</a>
+    </div>
+  </section>
+
+  <footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            </div>
+            <span class="text-xl font-bold">TenantMatch</span>
+          </div>
+          <p class="text-gray-400 text-sm">The trusted rental operating system for Gauteng landlords, agents, and tenants.</p>
+        </div>
+        
+        <div>
+          <h4 class="font-semibold mb-4">Product</h4>
+          <ul class="space-y-2 text-gray-400 text-sm">
+            <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+            <li><a href="#pricing" class="hover:text-white transition-colors">Pricing</a></li>
+            <li><a href="#how-it-works" class="hover:text-white transition-colors">How It Works</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="font-semibold mb-4">Company</h4>
+          <ul class="space-y-2 text-gray-400 text-sm">
+            <li><a href="#" onclick="alert('About TenantMatch coming soon!'); return false;" class="hover:text-white transition-colors">About</a></li>
+            <li><a href="mailto:hello@tenantmatch.co.za" class="hover:text-white transition-colors">Contact</a></li>
+            <li><a href="#" onclick="alert('Privacy Policy coming soon!'); return false;" class="hover:text-white transition-colors">Privacy Policy</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="font-semibold mb-4">Support</h4>
+          <ul class="space-y-2 text-gray-400 text-sm">
+            <li><a href="#" onclick="alert('Help Center coming soon!'); return false;" class="hover:text-white transition-colors">Help Center</a></li>
+            <li><a href="#" onclick="alert('Terms of Service coming soon!'); return false;" class="hover:text-white transition-colors">Terms of Service</a></li>
+            <li><a href="#" onclick="alert('POPIA Compliance information coming soon!'); return false;" class="hover:text-white transition-colors">POPIA Compliance</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">&copy; 2026 TenantMatch. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="js/supabase.js" type="module"></script>
+  <script src="js/app.js" type="module"></script>
+</body>
+</html>

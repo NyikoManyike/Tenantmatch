@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Superadmin Dashboard — TenantMatch</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#0A3D62',
+              50: '#E8F1F8',
+              100: '#C5DBED',
+              200: '#9FC5E1',
+              300: '#79AED5',
+              400: '#5398C9',
+              500: '#2D82BD',
+              600: '#0A3D62',
+              700: '#082F4A',
+              800: '#062132',
+              900: '#04131A'
+            },
+            accent: {
+              DEFAULT: '#F7B731',
+              50: '#FEF6E6',
+              100: '#FDEAB8'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            'glow': '0 0 30px rgba(10, 61, 98, 0.15)',
+            'glow-accent': '0 0 30px rgba(247, 183, 49, 0.25)',
+          }
+        },
+      },
+    }
+  </script>
+  
+  <link rel="stylesheet" href="../css/framework.css">
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+    
+    .sidebar-link { transition: all 0.2s ease; }
+    .sidebar-link:hover { background: rgba(10, 61, 98, 0.05); }
+    .sidebar-link.active { background: rgba(10, 61, 98, 0.1); border-left: 3px solid #0A3D62; }
+    
+    .stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); }
+    
+    .page-section { display: none; }
+    .page-section.active { display: block; animation: fadeIn 0.3s ease; }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .notification-pulse { animation: notification-pulse 2s infinite; }
+    @keyframes notification-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(247, 183, 49, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(247, 183, 49, 0); }
+    }
+  </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased">
+  
+  <!-- Mobile Header -->
+  <header class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4">
+    <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-100 rounded-lg">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+      </div>
+      <span class="font-bold text-primary">TenantMatch</span>
+    </div>
+    <button onclick="toggleNotifications()" class="p-2 hover:bg-gray-100 rounded-lg relative">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+      </svg>
+      <span class="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full"></span>
+    </button>
+  </header>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+      <div class="flex flex-col h-full pt-16 lg:pt-0">
+        <!-- Logo -->
+        <div class="p-6 border-b border-gray-100">
+          <a href="../index.html" class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-700 rounded-xl flex items-center justify-center shadow-glow">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+              </svg>
+            </div>
+            <div>
+              <span class="text-lg font-bold text-primary">TenantMatch</span>
+              <span class="block text-xs text-gray-400 -mt-1">Superadmin</span>
+            </div>
+          </a>
+        </div>
+        
+        <!-- User Info -->
+        <div class="p-4 border-b border-gray-100">
+          <div class="flex items-center space-x-3 p-3 bg-primary-50 rounded-xl">
+            <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">NY</div>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold text-gray-900 truncate">Nyiko</div>
+              <div class="text-xs text-gray-500" id="current-role-label">Superadmin</div>
+            </div>
+          </div>
+          <!-- Impersonation Dropdown -->
+          <div class="mt-3">
+            <label class="text-xs text-gray-500 block mb-1">View as role:</label>
+            <select id="impersonate-role" class="w-full text-sm border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary" onchange="switchImpersonation(this.value)">
+              <option value="">Superadmin (Original)</option>
+              <option value="tenant">Tenant</option>
+              <option value="landlord">Landlord</option>
+              <option value="agent">Agent</option>
+            </select>
+          </div>
+          <div id="impersonation-banner" class="hidden mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+            <p class="text-xs text-yellow-700">Viewing as <span id="impersonated-role-text" class="font-medium"></span></p>
+          </div>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+          <a href="#dashboard" onclick="navigateTo('dashboard')" class="sidebar-link active flex items-center space-x-3 px-4 py-3 rounded-xl text-primary font-medium" data-page="dashboard">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+            </svg>
+            <span>Dashboard</span>
+          </a>
+          <a href="#users" onclick="navigateTo('users')" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600" data-page="users">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <span>Users</span>
+            <span class="ml-auto bg-primary-100 text-primary text-xs font-medium px-2 py-0.5 rounded-full" id="users-count">0</span>
+          </a>
+          <a href="#properties" onclick="navigateTo('properties')" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600" data-page="properties">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            <span>Properties</span>
+          </a>
+          <a href="#applications" onclick="navigateTo('applications')" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600" data-page="applications">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>Applications</span>
+          </a>
+          <a href="#revenue" onclick="navigateTo('revenue')" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600" data-page="revenue">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Revenue</span>
+          </a>
+          <a href="#analytics" onclick="navigateTo('analytics')" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600" data-page="analytics">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <span>Analytics</span>
+          </a>
+          
+          <div class="pt-4 mt-4 border-t border-gray-100">
+            <a href="#settings" onclick="navigateTo('settings')" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600" data-page="settings">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span>Settings</span>
+            </a>
+          </div>
+        </nav>
+        
+        <!-- Bottom -->
+        <div class="p-4 border-t border-gray-100">
+          <a href="../index.html" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <span>Sign Out</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64 min-h-screen pt-16 lg:pt-0">
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex items-center justify-between h-20 px-8 bg-white border-b border-gray-100">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900" id="page-title">Dashboard</h1>
+          <p class="text-gray-500" id="page-subtitle">Platform overview and management</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <input type="text" placeholder="Search..." class="w-64 pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          
+          <button onclick="toggleNotifications()" class="relative p-2 hover:bg-gray-100 rounded-xl transition-colors">
+            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-accent rounded-full notification-pulse"></span>
+          </button>
+          
+          <!-- User Menu -->
+          <div class="relative">
+            <button onclick="toggleUserMenu()" class="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-xl transition-colors">
+              <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-medium text-sm">
+                ${(localStorage.getItem('demo_user_name') || 'NA').charAt(0).toUpperCase()}
+              </div>
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+              <div class="px-4 py-2 border-b border-gray-100">
+                <p class="text-sm font-medium text-gray-900">${localStorage.getItem('demo_user_name') || 'Admin'}</p>
+                <p class="text-xs text-gray-500">${localStorage.getItem('demo_user_email') || ''}</p>
+              </div>
+              <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                Sign Out
+              </button>
+            </div>
+          </div>
+          
+          <button onclick="openModal('add-user')" class="btn btn-primary shadow-glow">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add User
+          </button>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="p-4 lg:p-8">
+        
+        <!-- DASHBOARD PAGE -->
+        <div id="page-dashboard" class="page-section active">
+          <!-- Stats Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100">
+              <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
+                  <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                  </svg>
+                </div>
+                <span class="flex items-center text-sm font-medium text-green-600">+12%</span>
+              </div>
+              <div class="text-3xl font-bold text-gray-900" id="stat-users">0</div>
+              <div class="text-sm text-gray-500">Total Users</div>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100">
+              <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center">
+                  <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                  </svg>
+                </div>
+                <span class="flex items-center text-sm font-medium text-green-600">+8%</span>
+              </div>
+              <div class="text-3xl font-bold text-gray-900" id="stat-properties">0</div>
+              <div class="text-sm text-gray-500">Properties</div>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100">
+              <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                  <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                </div>
+                <span class="flex items-center text-sm font-medium text-green-600">+24%</span>
+              </div>
+              <div class="text-3xl font-bold text-gray-900" id="stat-applications">0</div>
+              <div class="text-sm text-gray-500">Applications</div>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100">
+              <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                  <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <span class="flex items-center text-sm font-medium text-green-600">+18%</span>
+              </div>
+              <div class="text-3xl font-bold text-gray-900" id="stat-revenue">R0</div>
+              <div class="text-sm text-gray-500">Monthly Revenue</div>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Revenue Chart -->
+            <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="font-semibold text-gray-900">Revenue Overview</h3>
+                <div class="flex gap-2">
+                  <button class="px-3 py-1 text-sm bg-primary-50 text-primary rounded-lg font-medium">Monthly</button>
+                  <button class="px-3 py-1 text-sm text-gray-500 hover:bg-gray-50 rounded-lg">Yearly</button>
+                </div>
+              </div>
+              <div class="h-64 flex items-end space-x-3" id="revenue-chart">
+                <!-- Chart bars will be inserted here -->
+              </div>
+              <div class="flex justify-between mt-3 text-xs text-gray-400 font-medium">
+                <span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span>
+              </div>
+            </div>
+
+            <!-- User Distribution -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-100">
+              <h3 class="font-semibold text-gray-900 mb-6">User Distribution</h3>
+              <div class="flex items-center justify-center">
+                <div class="relative w-44 h-44">
+                  <svg class="w-44 h-44 transform -rotate-90">
+                    <circle cx="88" cy="88" r="70" fill="none" stroke="#E5E7EB" stroke-width="16"/>
+                    <circle cx="88" cy="88" r="70" fill="none" stroke="#0A3D62" stroke-width="16" stroke-dasharray="264 440" stroke-dashoffset="0"/>
+                    <circle cx="88" cy="88" r="70" fill="none" stroke="#F7B731" stroke-width="16" stroke-dasharray="110 440" stroke-dashoffset="-264"/>
+                    <circle cx="88" cy="88" r="70" fill="none" stroke="#10B981" stroke-width="16" stroke-dasharray="66 440" stroke-dashoffset="-374"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center">
+                      <div class="text-3xl font-bold text-gray-900" id="stat-total-users">0</div>
+                      <div class="text-xs text-gray-500">Total</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-6 space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2"><div class="w-3 h-3 bg-primary rounded-full"></div><span class="text-sm text-gray-600">Tenants</span></div>
+                  <span class="font-semibold text-gray-900" id="tenant-count">0</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2"><div class="w-3 h-3 bg-accent rounded-full"></div><span class="text-sm text-gray-600">Landlords</span></div>
+                  <span class="font-semibold text-gray-900" id="landlord-count">0</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2"><div class="w-3 h-3 bg-green-500 rounded-full"></div><span class="text-sm text-gray-600">Agents</span></div>
+                  <span class="font-semibold text-gray-900" id="agent-count">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Users Table -->
+          <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="font-semibold text-gray-900">Recent Users</h3>
+              <a href="#users" onclick="navigateTo('users')" class="text-sm text-primary hover:underline">View all users</a>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">User</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Role</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Tier</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Joined</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100" id="recent-users-table">
+                  <!-- Users will be inserted here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- USERS PAGE -->
+        <div id="page-users" class="page-section">
+          <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <input type="text" id="user-search" placeholder="Search users..." class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-primary">
+                <select id="role-filter" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-primary">
+                  <option value="">All Roles</option>
+                  <option value="tenant">Tenant</option>
+                  <option value="landlord">Landlord</option>
+                  <option value="agent">Agent</option>
+                </select>
+              </div>
+              <button onclick="openModal('add-user')" class="btn btn-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Add User
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">User</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Role</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Tier</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Joined</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100" id="users-table">
+                  <!-- Users will be inserted here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROPERTIES PAGE -->
+        <div id="page-properties" class="page-section">
+          <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <input type="text" id="property-search" placeholder="Search properties..." class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-primary">
+              </div>
+              <button onclick="openModal('add-property')" class="btn btn-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Add Property
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Property</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Location</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Type</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Units</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100" id="properties-table">
+                  <!-- Properties will be inserted here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- APPLICATIONS PAGE -->
+        <div id="page-applications" class="page-section">
+          <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <select id="application-status-filter" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-primary">
+                  <option value="">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Applicant</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Property</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Unit</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Applied</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100" id="applications-table">
+                  <!-- Applications will be inserted here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- REVENUE PAGE -->
+        <div id="page-revenue" class="page-section">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100">
+              <div class="text-sm text-gray-500 mb-2">Total Revenue</div>
+              <div class="text-3xl font-bold text-gray-900" id="total-revenue">R0</div>
+              <div class="text-sm text-green-600 mt-2">+18% from last month</div>
+            </div>
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100">
+              <div class="text-sm text-gray-500 mb-2">Monthly Average</div>
+              <div class="text-3xl font-bold text-gray-900" id="monthly-average">R0</div>
+              <div class="text-sm text-gray-500 mt-2">Last 6 months</div>
+            </div>
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100">
+              <div class="text-sm text-gray-500 mb-2">Active Subscriptions</div>
+              <div class="text-3xl font-bold text-gray-900" id="active-subs">0</div>
+              <div class="text-sm text-gray-500 mt-2">Growth + Pro plans</div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-gray-100">
+            <h3 class="font-semibold text-gray-900 mb-6">Revenue by Month</h3>
+            <div class="h-80 flex items-end space-x-4" id="revenue-detail-chart">
+              <!-- Chart bars -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS PAGE -->
+        <div id="page-analytics" class="page-section">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl p-6 border border-gray-100">
+              <h3 class="font-semibold text-gray-900 mb-4">User Growth</h3>
+              <div class="h-64 flex items-end space-x-2" id="user-growth-chart">
+                <!-- Chart -->
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border border-gray-100">
+              <h3 class="font-semibold text-gray-900 mb-4">Application Success Rate</h3>
+              <div class="flex items-center justify-center h-64">
+                <div class="text-center">
+                  <div class="text-5xl font-bold text-green-600" id="success-rate">0%</div>
+                  <div class="text-gray-500 mt-2">Approved Applications</div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border border-gray-100">
+              <h3 class="font-semibold text-gray-900 mb-4">Property Distribution</h3>
+              <div class="space-y-4" id="property-distribution">
+                <!-- Distribution -->
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border border-gray-100">
+              <h3 class="font-semibold text-gray-900 mb-4">Top Cities</h3>
+              <div class="space-y-4" id="top-cities">
+                <!-- Cities -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS PAGE -->
+        <div id="page-settings" class="page-section">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl p-6 border border-gray-100">
+              <h3 class="font-semibold text-gray-900 mb-4">Platform Settings</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-medium text-gray-900">Maintenance Mode</div>
+                    <div class="text-sm text-gray-500">Temporarily disable the platform</div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  </label>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-medium text-gray-900">New Registrations</div>
+                    <div class="text-sm text-gray-500">Allow new users to register</div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  </label>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-medium text-gray-900">Email Verification</div>
+                    <div class="text-sm text-gray-500">Require email verification</div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 border border-gray-100">
+              <h3 class="font-semibold text-gray-900 mb-4">Danger Zone</h3>
+              <div class="space-y-4">
+                <div class="p-4 bg-red-50 rounded-xl border border-red-100">
+                  <div class="font-medium text-red-700">Reset Database</div>
+                  <div class="text-sm text-red-600 mt-1">This action cannot be undone. All data will be permanently deleted.</div>
+                  <button class="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Reset Database</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Notifications Dropdown -->
+  <div id="notifications-dropdown" class="fixed top-20 right-8 w-96 bg-white rounded-2xl shadow-xl border border-gray-100 hidden z-50 max-h-96 overflow-y-auto">
+    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+      <h3 class="font-semibold text-gray-900">Notifications</h3>
+      <button class="text-sm text-primary hover:underline" onclick="markAllRead()">Mark all read</button>
+    </div>
+    <div id="notifications-list">
+      <!-- Notifications -->
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div id="modal-add-user" class="modal-overlay hidden">
+    <div class="modal max-w-lg">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-gray-900">Add New User</h3>
+        <button onclick="closeModal('add-user')" class="p-1 hover:bg-gray-100 rounded-lg">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <form onsubmit="handleAddUser(event)" class="modal-body space-y-4">
+        <div>
+          <label class="form-label">Full Name</label>
+          <input type="text" name="full_name" class="form-input" required>
+        </div>
+        <div>
+          <label class="form-label">Email Address</label>
+          <input type="email" name="email" class="form-input" required>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="form-label">Role</label>
+            <select name="role" class="form-select">
+              <option value="tenant">Tenant</option>
+              <option value="landlord">Landlord</option>
+              <option value="agent">Agent</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Tier</label>
+            <select name="tier" class="form-select">
+              <option value="free">Free</option>
+              <option value="growth">Growth</option>
+              <option value="pro">Pro</option>
+              <option value="vip">VIP</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer !border-0 !p-0 !mt-4">
+          <button type="button" onclick="closeModal('add-user')" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Property Modal -->
+  <div id="modal-add-property" class="modal-overlay hidden">
+    <div class="modal max-w-lg">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-gray-900">Add New Property</h3>
+        <button onclick="closeModal('add-property')" class="p-1 hover:bg-gray-100 rounded-lg">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <form onsubmit="handleAddProperty(event)" class="modal-body space-y-4">
+        <div>
+          <label class="form-label">Property Name</label>
+          <input type="text" name="name" class="form-input" required>
+        </div>
+        <div>
+          <label class="form-label">Address</label>
+          <input type="text" name="address" class="form-input" required>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="form-label">City</label>
+            <input type="text" name="city" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">Postal Code</label>
+            <input type="text" name="postal_code" class="form-input">
+          </div>
+        </div>
+        <div>
+          <label class="form-label">Property Type</label>
+          <select name="property_type" class="form-select">
+            <option value="apartment">Apartment</option>
+            <option value="house">House</option>
+            <option value="flat">Flat</option>
+            <option value="townhouse">Townhouse</option>
+          </select>
+        </div>
+        <div class="modal-footer !border-0 !p-0 !mt-4">
+          <button type="button" onclick="closeModal('add-property')" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Property</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script>
+    // Admin access check - only allow superadmin role
+    (function() {
+      const role = localStorage.getItem('demo_role');
+      if (role !== 'superadmin') {
+        window.location.href = '../auth.html';
+        return;
+      }
+    })();
+
+    // Current logged in user
+    const CURRENT_USER = { 
+      id: localStorage.getItem('demo_user_id') || 'sa',
+      full_name: localStorage.getItem('demo_user_name') || 'Nyiko Admin',
+      email: localStorage.getItem('demo_user_email') || 'admin@tenantmatch.com',
+      role: 'superadmin'
+    };
+
+    // Navigation
+    function navigateTo(page) {
+      // Update nav
+      document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.classList.remove('active', 'text-primary', 'bg-primary/10')
+        link.classList.add('text-gray-600')
+        if (link.dataset.page === page) {
+          link.classList.add('active', 'text-primary', 'bg-primary/10')
+          link.classList.remove('text-gray-600')
+        }
+      })
+
+      // Update page
+      document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'))
+      const pageEl = document.getElementById(`page-${page}`)
+      if (pageEl) pageEl.classList.add('active')
+
+      // Update title
+      const titles = {
+        dashboard: 'Dashboard',
+        users: 'Users',
+        properties: 'Properties',
+        applications: 'Applications',
+        revenue: 'Revenue',
+        analytics: 'Analytics',
+        settings: 'Settings'
+      }
+      document.getElementById('page-title').textContent = titles[page] || 'Dashboard'
+
+      // Load page data
+      loadPageData(page)
+    }
+
+    // Modal functions
+    function openModal(id) {
+      document.getElementById(`modal-${id}`)?.classList.remove('hidden')
+    }
+    function closeModal(id) {
+      document.getElementById(`modal-${id}`)?.classList.add('hidden')
+    }
+
+    // Toggle sidebar (mobile)
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('-translate-x-full')
+    }
+
+    // Toggle notifications
+    function toggleNotifications() {
+      document.getElementById('notifications-dropdown').classList.toggle('hidden')
+    }
+
+    // User menu toggle
+    function toggleUserMenu() {
+      const menu = document.getElementById('user-menu')
+      menu.classList.toggle('hidden')
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem('demo_user_id')
+      localStorage.removeItem('demo_role')
+      localStorage.removeItem('demo_user_name')
+      localStorage.removeItem('demo_user_email')
+      window.location.href = '../auth.html'
+    }
+
+    // Close user menu when clicking outside
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('user-menu')
+      const button = document.querySelector('[onclick="toggleUserMenu()"]')
+      if (menu && !menu.contains(e.target) && !button?.contains(e.target)) {
+        menu.classList.add('hidden')
+      }
+    })
+
+    // Impersonation
+    let IMPERSONATING = false;
+    let ORIGINAL_USER = 'sa';
+
+    function switchImpersonation(role) {
+      const banner = document.getElementById('impersonation-banner');
+      const roleText = document.getElementById('impersonated-role-text');
+      const roleLabel = document.getElementById('current-role-label');
+      
+      if (!role) {
+        IMPERSONATING = false;
+        banner.classList.add('hidden');
+        roleLabel.textContent = 'Superadmin';
+        Toast.success('Returned to Superadmin view');
+      } else {
+        IMPERSONATING = true;
+        roleText.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+        banner.classList.remove('hidden');
+        roleLabel.textContent = 'Viewing as ' + role.charAt(0).toUpperCase() + role.slice(1);
+        Toast.info(`Viewing dashboard as ${role}`);
+        
+        // Load appropriate dashboard content
+        showImpersonatedDashboard(role);
+      }
+    }
+
+    function showImpersonatedDashboard(role) {
+      const contentArea = document.getElementById('page-dashboard');
+      let html = '';
+      
+      if (role === 'tenant') {
+        const properties = MockData.properties.slice(0, 4);
+        html = `
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Saved Properties</div>
+              <div class="text-2xl font-bold text-primary">${MockData.savedProperties.length}</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Active Applications</div>
+              <div class="text-2xl font-bold text-primary">${MockData.applications.filter(a => a.tenant_id === 'u1').length}</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Upcoming Viewings</div>
+              <div class="text-2xl font-bold text-primary">${MockData.viewings.length}</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Active Leases</div>
+              <div class="text-2xl font-bold text-primary">${MockData.leases.filter(l => l.tenant_id === 'u1').length}</div>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Available Properties</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${properties.map(p => `
+                <div class="border border-gray-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                  <h4 class="font-semibold text-gray-900">${p.name}</h4>
+                  <p class="text-sm text-gray-500">${p.city}, ${p.suburb}</p>
+                  <p class="text-primary font-medium mt-2">From R${Math.min(...MockData.units.filter(u => u.property_id === p.id).map(u => u.rent_amount)).toLocaleString()}/mo</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (role === 'landlord') {
+        const properties = MockData.properties.filter(p => p.owner_id === 'u2');
+        const units = MockData.units.filter(u => properties.map(p => p.id).includes(u.property_id));
+        html = `
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Properties</div>
+              <div class="text-2xl font-bold text-primary">${properties.length}</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Total Units</div>
+              <div class="text-2xl font-bold text-primary">${units.length}</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Occupied</div>
+              <div class="text-2xl font-bold text-green-600">${units.filter(u => u.status === 'occupied').length}</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Monthly Revenue</div>
+              <div class="text-2xl font-bold text-primary">R${units.filter(u => u.status === 'occupied').reduce((sum, u) => sum + u.rent_amount, 0).toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Properties</h3>
+            <div class="space-y-3">
+              ${properties.map(p => `
+                <div class="border border-gray-100 rounded-xl p-4 hover:shadow-md transition-shadow">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h4 class="font-semibold text-gray-900">${p.name}</h4>
+                      <p class="text-sm text-gray-500">${p.address}</p>
+                    </div>
+                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Active</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (role === 'agent') {
+        html = `
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Active Leads</div>
+              <div class="text-2xl font-bold text-primary">${MockData.leads.length}</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Properties Managed</div>
+              <div class="text-2xl font-bold text-primary">${MockData.properties.length}</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">Pending Commission</div>
+              <div class="text-2xl font-bold text-yellow-600">R${MockData.commissions.filter(c => c.status === 'pending').reduce((sum, c) => sum + c.amount, 0).toLocaleString()}</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 stat-card">
+              <div class="text-sm text-gray-500 mb-1">This Month</div>
+              <div class="text-2xl font-bold text-green-600">R${MockData.commissions.filter(c => c.status === 'paid').reduce((sum, c) => sum + c.amount, 0).toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Leads</h3>
+            <div class="space-y-3">
+              ${MockData.leads.map(l => `
+                <div class="border border-gray-100 rounded-xl p-4">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h4 class="font-semibold text-gray-900">${l.name}</h4>
+                      <p class="text-sm text-gray-500">${l.email} • ${l.source}</p>
+                    </div>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs capitalize">${l.status}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      document.getElementById('dashboard-content').innerHTML = html;
+    }
+
+    // Initialize page
+    function init() {
+      loadPageData('dashboard')
+      loadNotifications()
+    }
+
+    // Load data for each page
+    function loadPageData(page) {
+      const api = MockData.api
+      const stats = api.getStats('superadmin')
+
+      switch(page) {
+        case 'dashboard':
+          renderDashboard(stats, api)
+          break
+        case 'users':
+          renderUsers(api)
+          break
+        case 'properties':
+          renderProperties(api)
+          break
+        case 'applications':
+          renderApplications(api)
+          break
+        case 'revenue':
+          renderRevenue(api, stats)
+          break
+        case 'analytics':
+          renderAnalytics(api, stats)
+          break
+        case 'settings':
+          renderSettings()
+          break
+      }
+    }
+
+    function renderSettings() {
+      console.log('Settings loaded');
+    }
+
+    // Render Dashboard
+    function renderDashboard(stats, api) {
+      document.getElementById('stat-users').textContent = stats.totalUsers
+      document.getElementById('stat-properties').textContent = stats.totalProperties
+      document.getElementById('stat-applications').textContent = stats.pendingApplications + stats.approvedApplications
+      document.getElementById('stat-revenue').textContent = 'R' + stats.monthlyRevenue.toLocaleString()
+      
+      document.getElementById('stat-total-users').textContent = stats.totalUsers
+      
+      const users = api.getUsers()
+      document.getElementById('users-count').textContent = users.length
+      document.getElementById('tenant-count').textContent = users.filter(u => u.role === 'tenant').length
+      document.getElementById('landlord-count').textContent = users.filter(u => u.role === 'landlord').length
+      document.getElementById('agent-count').textContent = users.filter(u => u.role === 'agent').length
+
+      // Revenue chart
+      const revenue = MockData.revenue
+      const maxRevenue = Math.max(...revenue.map(r => r.amount))
+      const chartHtml = revenue.map(r => `
+        <div class="flex-1 bg-gradient-to-t from-primary to-primary/30 rounded-t-xl relative group" style="height: ${(r.amount / maxRevenue) * 100}%">
+          <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">R${r.amount.toLocaleString()}</div>
+        </div>
+      `).join('')
+      document.getElementById('revenue-chart').innerHTML = chartHtml
+
+      // Recent users table
+      const recentUsers = users.slice(0, 5)
+      document.getElementById('recent-users-table').innerHTML = recentUsers.map(user => `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-700 rounded-full flex items-center justify-center text-white font-semibold">${user.full_name.split(' ').map(n => n[0]).join('')}</div>
+              <div>
+                <div class="font-medium text-gray-900">${user.full_name}</div>
+                <div class="text-sm text-gray-500">${user.email}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4"><span class="px-3 py-1 ${getRoleBadgeClass(user.role)} text-xs rounded-full font-medium">${user.role}</span></td>
+          <td class="px-6 py-4"><span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">${user.tier}</span></td>
+          <td class="px-6 py-4 text-sm text-gray-500">${formatDate(user.created_at)}</td>
+          <td class="px-6 py-4"><span class="px-3 py-1 ${getStatusBadgeClass(user.status)} text-xs rounded-full font-medium">${user.status}</span></td>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-2">
+              <button class="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
+              <button class="p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+            </div>
+          </td>
+        </tr>
+      `).join('')
+    }
+
+    // Render Users
+    function renderUsers(api) {
+      const users = api.getUsers()
+      document.getElementById('users-table').innerHTML = users.map(user => `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-700 rounded-full flex items-center justify-center text-white font-semibold">${user.full_name.split(' ').map(n => n[0]).join('')}</div>
+              <div>
+                <div class="font-medium text-gray-900">${user.full_name}</div>
+                <div class="text-sm text-gray-500">${user.email}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4"><span class="px-3 py-1 ${getRoleBadgeClass(user.role)} text-xs rounded-full font-medium">${user.role}</span></td>
+          <td class="px-6 py-4"><span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">${user.tier}</span></td>
+          <td class="px-6 py-4 text-sm text-gray-500">${formatDate(user.created_at)}</td>
+          <td class="px-6 py-4"><span class="px-3 py-1 ${getStatusBadgeClass(user.status)} text-xs rounded-full font-medium">${user.status}</span></td>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-2">
+              <button class="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
+              <button class="p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+            </div>
+          </td>
+        </tr>
+      `).join('')
+    }
+
+    // Render Properties
+    function renderProperties(api) {
+      const properties = api.getProperties()
+      document.getElementById('properties-table').innerHTML = properties.map(prop => {
+        const units = api.getUnits({ property_id: prop.id })
+        const occupied = units.filter(u => u.status === 'occupied').length
+        return `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4">
+            <div class="font-medium text-gray-900">${prop.name}</div>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500">${prop.address}<br>${prop.city}</td>
+          <td class="px-6 py-4"><span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full capitalize">${prop.property_type}</span></td>
+          <td class="px-6 py-4">
+            <div class="text-sm">${units.length} total</div>
+            <div class="text-xs text-green-600">${occupied} occupied</div>
+          </td>
+          <td class="px-6 py-4"><span class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">${prop.status}</span></td>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-2">
+              <button class="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
+              <button class="p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+            </div>
+          </td>
+        </tr>
+      `}).join('')
+    }
+
+    // Render Applications
+    function renderApplications(api) {
+      const applications = api.getApplications()
+      document.getElementById('applications-table').innerHTML = applications.map(app => {
+        const tenant = api.getUserById(app.tenant_id)
+        const property = api.getPropertyById(app.property_id)
+        const unit = api.getUnitById(app.unit_id)
+        return `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4">
+            <div class="font-medium text-gray-900">${tenant?.full_name || 'Unknown'}</div>
+            <div class="text-sm text-gray-500">${tenant?.email || ''}</div>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500">${property?.name || 'Unknown'}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">${unit?.unit_number || 'N/A'}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">${formatDate(app.applied_at)}</td>
+          <td class="px-6 py-4"><span class="px-3 py-1 ${getApplicationStatusBadgeClass(app.status)} text-xs rounded-full font-medium">${app.status}</span></td>
+          <td class="px-6 py-4">
+            ${app.status === 'pending' ? `
+            <div class="flex items-center gap-2">
+              <button onclick="updateApplication('${app.id}', 'approved')" class="px-3 py-1 bg-green-500 text-white text-xs rounded-lg hover:bg-green-600">Approve</button>
+              <button onclick="updateApplication('${app.id}', 'rejected')" class="px-3 py-1 bg-red-500 text-white text-xs rounded-lg hover:bg-red-600">Reject</button>
+            </div>
+            ` : '<span class="text-gray-400 text-sm">Reviewed</span>'}
+          </td>
+        </tr>
+      `}).join('')
+    }
+
+    // Render Revenue
+    function renderRevenue(api, stats) {
+      const revenue = MockData.revenue
+      const total = revenue.reduce((sum, r) => sum + r.amount, 0)
+      const average = Math.round(total / revenue.length)
+      
+      document.getElementById('total-revenue').textContent = 'R' + total.toLocaleString()
+      document.getElementById('monthly-average').textContent = 'R' + average.toLocaleString()
+      document.getElementById('active-subs').textContent = api.getUsers().filter(u => u.tier !== 'free').length
+
+      const maxRevenue = Math.max(...revenue.map(r => r.amount))
+      document.getElementById('revenue-detail-chart').innerHTML = revenue.map(r => `
+        <div class="flex-1 flex flex-col items-center">
+          <div class="w-full bg-gradient-to-t from-primary to-primary/30 rounded-t-xl relative group" style="height: ${(r.amount / maxRevenue) * 250}px; min-height: 20px;">
+            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">R${r.amount.toLocaleString()}</div>
+          </div>
+          <div class="mt-2 text-xs text-gray-500">${r.month}</div>
+        </div>
+      `).join('')
+    }
+
+    // Render Analytics
+    function renderAnalytics(api, stats) {
+      const applications = api.getApplications()
+      const approved = applications.filter(a => a.status === 'approved').length
+      const total = applications.length
+      const rate = total > 0 ? Math.round((approved / total) * 100) : 0
+      
+      document.getElementById('success-rate').textContent = rate + '%'
+
+      const properties = api.getProperties()
+      const cities = {}
+      properties.forEach(p => {
+        cities[p.city] = (cities[p.city] || 0) + 1
+      })
+      
+      document.getElementById('top-cities').innerHTML = Object.entries(cities)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([city, count]) => `
+          <div class="flex items-center justify-between">
+            <span class="text-gray-600">${city}</span>
+            <span class="font-medium">${count} properties</span>
+          </div>
+        `).join('')
+
+      document.getElementById('property-distribution').innerHTML = ['apartment', 'flat', 'house', 'townhouse'].map(type => {
+        const count = properties.filter(p => p.property_type === type).length
+        const percent = properties.length > 0 ? Math.round((count / properties.length) * 100) : 0
+        return `
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm text-gray-600 capitalize">${type}</span>
+              <span class="text-sm font-medium">${count}</span>
+            </div>
+            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full" style="width: ${percent}%"></div>
+            </div>
+          </div>
+        `
+      }).join('')
+    }
+
+    // Update application
+    function updateApplication(id, status) {
+      MockData.api.updateApplication(id, status)
+      loadPageData('applications')
+      alert(`Application ${status}!`)
+    }
+
+    // Handle add user
+    function handleAddUser(e) {
+      e.preventDefault()
+      const formData = new FormData(e.target)
+      const userData = {
+        full_name: formData.get('full_name'),
+        email: formData.get('email'),
+        role: formData.get('role'),
+        tier: formData.get('tier')
+      }
+      MockData.api.createUser(userData)
+      closeModal('add-user')
+      e.target.reset()
+      loadPageData('users')
+      loadPageData('dashboard')
+      alert('User created successfully!')
+    }
+
+    // Handle add property
+    function handleAddProperty(e) {
+      e.preventDefault()
+      const formData = new FormData(e.target)
+      const propertyData = {
+        owner_id: 'u2', // Default owner for demo
+        name: formData.get('name'),
+        address: formData.get('address'),
+        city: formData.get('city'),
+        postal_code: formData.get('postal_code'),
+        property_type: formData.get('property_type')
+      }
+      MockData.api.createProperty(propertyData)
+      closeModal('add-property')
+      e.target.reset()
+      loadPageData('properties')
+      loadPageData('dashboard')
+      alert('Property created successfully!')
+    }
+
+    // Notifications
+    function loadNotifications() {
+      const notifications = MockData.api.getNotifications('u2')
+      document.getElementById('notifications-list').innerHTML = notifications.map(n => `
+        <div class="p-4 hover:bg-gray-50 border-b border-gray-100 cursor-pointer ${n.read ? 'opacity-60' : ''}">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 ${n.read ? 'bg-gray-100' : 'bg-primary/10'} rounded-full flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 ${n.read ? 'text-gray-400' : 'text-primary'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-900">${n.title}</p>
+              <p class="text-xs text-gray-500">${n.message}</p>
+              <p class="text-xs text-gray-400 mt-1">${formatRelativeTime(n.created_at)}</p>
+            </div>
+          </div>
+        </div>
+      `).join('')
+    }
+
+    function markAllRead() {
+      alert('All notifications marked as read!')
+    }
+
+    // Helper functions
+    function getRoleBadgeClass(role) {
+      const classes = {
+        tenant: 'bg-blue-50 text-blue-700',
+        landlord: 'bg-accent/20 text-accent',
+        agent: 'bg-purple-50 text-purple-700'
+      }
+      return classes[role] || 'bg-gray-100 text-gray-700'
+    }
+
+    function getStatusBadgeClass(status) {
+      const classes = {
+        active: 'bg-green-50 text-green-700',
+        pending: 'bg-yellow-50 text-yellow-700'
+      }
+      return classes[status] || 'bg-gray-100 text-gray-700'
+    }
+
+    function getApplicationStatusBadgeClass(status) {
+      const classes = {
+        approved: 'bg-green-50 text-green-700',
+        pending: 'bg-yellow-50 text-yellow-700',
+        rejected: 'bg-red-50 text-red-700'
+      }
+      return classes[status] || 'bg-gray-100 text-gray-700'
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr)
+      return date.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })
+    }
+
+    function formatRelativeTime(dateStr) {
+      const now = new Date()
+      const date = new Date(dateStr)
+      const diff = now - date
+      const hours = Math.floor(diff / (1000 * 60 * 60))
+      const days = Math.floor(hours / 24)
+      
+      if (days > 0) return days + 'd ago'
+      if (hours > 0) return hours + 'h ago'
+      return 'Just now'
+    }
+
+    // Handle hash navigation
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '') || 'dashboard'
+      navigateTo(hash)
+    })
+
+    // Close notifications on outside click
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('notifications-dropdown')
+      if (!dropdown?.contains(e.target) && !e.target.closest('button[onclick="toggleNotifications()"]')) {
+        dropdown?.classList.add('hidden')
+      }
+    })
+
+    // Initialize
+    const initialPage = window.location.hash.replace('#', '') || 'dashboard'
+    navigateTo(initialPage)
+  </script>
+</body>
+</html>

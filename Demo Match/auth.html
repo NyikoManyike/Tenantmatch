@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In / Sign Up — TenantMatch</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0A3D62',
+            primaryDark: '#072840',
+            accent: '#F7B731',
+            accentLight: '#FBD984',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="font-sans antialiased min-h-screen flex">
+  
+  <!-- Left Side - Branding -->
+  <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary via-primaryDark to-gray-900 relative overflow-hidden">
+    <div class="absolute inset-0">
+      <div class="absolute top-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 left-10 w-64 h-64 bg-white/5 rounded-full blur-2xl"></div>
+    </div>
+    
+    <div class="relative z-10 flex flex-col justify-center px-12 xl:px-20">
+      <a href="index.html" class="flex items-center space-x-3 mb-12">
+        <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-white">TenantMatch</span>
+      </a>
+      
+      <h1 class="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
+        The rental OS<br><span class="text-accent">Gauteng trusts</span>
+      </h1>
+      
+      <p class="text-lg text-white/70 mb-8 max-w-md">
+        Join thousands of landlords, agents, and tenants who've transformed their rental experience.
+      </p>
+      
+      <div class="space-y-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
+            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <span class="text-white/80">One reusable tenant profile</span>
+        </div>
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
+            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <span class="text-white/80">Verified documents — upload once</span>
+        </div>
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
+            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <span class="text-white/80">Professional property management</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side - Auth Form -->
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
+    <div class="w-full max-w-md">
+      
+      <!-- Mobile Logo -->
+      <a href="index.html" class="lg:hidden flex items-center space-x-2 mb-8">
+        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+        </div>
+        <span class="text-xl font-bold text-primary">TenantMatch</span>
+      </a>
+      
+      <!-- Tab Toggle -->
+      <div class="bg-white rounded-xl p-1 shadow-md mb-6 flex">
+        <button id="tab-signin" class="flex-1 py-2.5 rounded-lg font-medium transition-colors tab-active">
+          Sign In
+        </button>
+        <button id="tab-signup" class="flex-1 py-2.5 rounded-lg font-medium transition-colors text-gray-500 hover:text-gray-700">
+          Sign Up
+        </button>
+      </div>
+      
+      <!-- Sign In Form -->
+      <div id="form-signin" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+          <input type="email" id="signin-email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="you@example.com">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+          <input type="password" id="signin-password" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="••••••••">
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <label class="flex items-center">
+            <input type="checkbox" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
+            <span class="ml-2 text-sm text-gray-600">Remember me</span>
+          </label>
+          <a href="#" onclick="alert('Password reset coming soon!'); return false;" class="text-sm text-primary hover:underline">Forgot password?</a>
+        </div>
+        
+        <button id="btn-signin" class="w-full bg-primary hover:bg-primaryDark text-white py-3 rounded-xl font-semibold transition-colors">
+          Sign In
+        </button>
+      </div>
+      
+      <!-- Sign Up Form (hidden by default) -->
+      <div id="form-signup" class="space-y-5 hidden">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+          <input type="text" id="signup-name" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="John Doe">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+          <input type="email" id="signup-email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="you@example.com">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+          <input type="password" id="signup-password" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="Min. 6 characters">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password</label>
+          <input type="password" id="signup-confirm-password" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="Confirm your password">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">I am a...</label>
+          <select id="signup-role" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white">
+            <option value="tenant">Tenant — Looking to rent</option>
+            <option value="landlord">Landlord — Have properties to rent</option>
+            <option value="agent">Agent — Manage properties for others</option>
+          </select>
+        </div>
+        
+        <button id="btn-signup" class="w-full bg-primary hover:bg-primaryDark text-white py-3 rounded-xl font-semibold transition-colors">
+          Create Account
+        </button>
+      </div>
+      
+      <!-- Divider -->
+      <div class="relative my-8">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-200"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-4 bg-gray-50 text-gray-500">or continue with</span>
+        </div>
+      </div>
+      
+      <!-- Social Login -->
+      <button id="btn-google" class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-3 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2">
+        <svg class="w-5 h-5" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        <span>Continue with Google</span>
+      </button>
+      
+      <!-- Terms -->
+      <p class="text-center text-sm text-gray-500 mt-6">
+        By continuing, you agree to our 
+        <a href="#" onclick="alert('Terms of Service coming soon!'); return false;" class="text-primary hover:underline">Terms</a> and 
+        <a href="#" onclick="alert('Privacy Policy coming soon!'); return false;" class="text-primary hover:underline">Privacy Policy</a>
+      </p>
+      
+      <!-- Messages -->
+      <div id="auth-message" class="mt-4 p-4 rounded-xl text-sm hidden"></div>
+      
+      <!-- Demo Login Section -->
+      <div class="mt-8 p-6 bg-gradient-to-br from-primary/5 to-accent/10 border border-primary/20 rounded-2xl">
+        <p class="text-sm text-gray-600 text-center mb-4">
+          <strong>Try the Demo</strong> - No account needed
+        </p>
+        <div class="grid grid-cols-1 gap-3">
+          <button onclick="demoLogin('tenant')" class="w-full py-3 px-4 bg-white border-2 border-green-500 hover:border-green-600 text-green-700 font-semibold rounded-xl transition-all hover:shadow-lg flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+            Demo as Tenant
+          </button>
+          <button onclick="demoLogin('landlord')" class="w-full py-3 px-4 bg-white border-2 border-primary hover:border-primaryDark text-primary font-semibold rounded-xl transition-all hover:shadow-lg flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            Demo as Landlord
+          </button>
+          <button onclick="demoLogin('agent')" class="w-full py-3 px-4 bg-white border-2 border-purple-500 hover:border-purple-600 text-purple-700 font-semibold rounded-xl transition-all hover:shadow-lg flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            Demo as Agent
+          </button>
+          <!-- Admin access - visible by default -->
+          <div id="admin-access">
+            <button onclick="demoLogin('superadmin')" class="w-full py-2 px-4 bg-gray-800 text-white font-medium rounded-xl transition-all">
+              Demo as Admin
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <script>
+        let logoClickCount = 0;
+        document.querySelector('a[href="index.html"]')?.addEventListener('click', function(e) {
+          logoClickCount++;
+          if (logoClickCount >= 5) {
+            document.getElementById('admin-access')?.classList.remove('hidden');
+            logoClickCount = 0;
+          }
+        });
+        
+        function demoLogin(role) {
+          localStorage.setItem('demo_role', role);
+          localStorage.setItem('demo_user_id', role === 'landlord' ? 'u2' : role === 'tenant' ? 'u1' : role === 'agent' ? 'u3' : 'u1');
+          window.location.href = 'dashboard/' + role + '.html';
+        }
+      </script>
+      
+    </div>
+  </div>
+
+  <script src="js/supabase.js" type="module"></script>
+  <script src="js/app.js" type="module"></script>
+</body>
+</html>

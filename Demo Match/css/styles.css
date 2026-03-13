@@ -1,0 +1,111 @@
+/* Custom animations and overrides */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Smooth scrolling for anchor links */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Tab toggle styling */
+.tab-active {
+  background-color: #0A3D62;
+  color: white;
+}
+
+.tab-inactive {
+  background-color: transparent;
+  color: #6B7280;
+}
+
+.tab-inactive:hover {
+  color: #374151;
+}
+
+/* Form focus states */
+input:focus,
+select:focus {
+  box-shadow: 0 0 0 3px rgba(10, 61, 98, 0.15);
+}
+
+/* Button hover effects */
+button:active {
+  transform: scale(0.98);
+}
+
+/* Auth message styles */
+.auth-success {
+  background-color: #D1FAE5;
+  border: 1px solid #34D399;
+  color: #065F46;
+}
+
+.auth-error {
+  background-color: #FEE2E2;
+  border: 1px solid #F87171;
+  color: #991B1B;
+}
+
+.auth-info {
+  background-color: #DBEAFE;
+  border: 1px solid #60A5FA;
+  color: #1E40AF;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #0A3D62;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Smooth page transitions */
+body {
+  opacity: 0;
+  animation: fadeInPage 0.3s ease-out forwards;
+}
+
+@keyframes fadeInPage {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

@@ -1,0 +1,2687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landlord Dashboard — TenantMatch</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#0A3D62',
+              50: '#E8F1F8',
+              100: '#C5DBED',
+              200: '#9FC5E1',
+              300: '#79AED5',
+              400: '#5398C9',
+              500: '#2D82BD',
+              600: '#0A3D62',
+              700: '#082F4A',
+              800: '#062132',
+              900: '#04131A'
+            },
+            accent: {
+              DEFAULT: '#F7B731',
+              50: '#FEF6E6',
+              100: '#FDEAB8'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            'glow': '0 0 30px rgba(10, 61, 98, 0.15)',
+            'glow-accent': '0 0 30px rgba(247, 183, 49, 0.25)',
+          }
+        },
+      },
+    }
+  </script>
+  
+  <link rel="stylesheet" href="../css/framework.css">
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+    
+    .sidebar-item { transition: all 0.2s ease; }
+    .sidebar-item:hover { transform: translateX(4px); }
+    .sidebar-item.active { background: linear-gradient(90deg, rgba(10, 61, 98, 0.1) 0%, transparent 100%); border-left: 3px solid #0A3D62; }
+    
+    .stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); }
+    
+    .data-row { transition: all 0.2s ease; }
+    .data-row:hover { background: linear-gradient(90deg, rgba(10, 61, 98, 0.02) 0%, transparent 100%); }
+    
+    .notification-pulse { animation: notification-pulse 2s infinite; }
+    @keyframes notification-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(247, 183, 49, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(247, 183, 49, 0); }
+    }
+  </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased">
+  
+  <!-- Mobile Header -->
+  <header class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4">
+    <button id="mobile-menu-btn" class="p-2 hover:bg-gray-100 rounded-lg">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+      </div>
+      <span class="font-bold text-primary">TenantMatch</span>
+    </div>
+    <button class="p-2 hover:bg-gray-100 rounded-lg relative" onclick="toggleNotifications()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+      </svg>
+      <span class="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full"></span>
+    </button>
+  </header>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+      <div class="flex flex-col h-full">
+        <!-- Logo -->
+        <div class="p-6 border-b border-gray-100">
+          <a href="../index.html" class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-700 rounded-xl flex items-center justify-center shadow-glow">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+              </svg>
+            </div>
+            <div>
+              <span class="text-lg font-bold text-primary">TenantMatch</span>
+              <span class="block text-xs text-gray-400 -mt-1">Landlord</span>
+            </div>
+          </a>
+        </div>
+        
+        <!-- User Info -->
+        <div class="p-4 border-b border-gray-100">
+          <div class="flex items-center space-x-3 p-3 bg-primary-50 rounded-xl">
+            <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-gray-900 font-semibold">JK</div>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold text-gray-900 truncate">James Kgosana</div>
+              <div class="text-xs text-accent font-medium">Growth Plan</div>
+            </div>
+            <button onclick="openModal('profile')" class="p-1.5 hover:bg-white rounded-lg transition-colors">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+<a href="#dashboard" onclick="navigateTo('dashboard')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="dashboard">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+            <span>Dashboard</span>
+          </a>
+          <a href="#properties" onclick="navigateTo('properties')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="properties">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            <span>Properties</span>
+          </a>
+          <a href="#units" onclick="navigateTo('units')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="units">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+            </svg>
+            <span>Units</span>
+          </a>
+          <a href="#applications" onclick="navigateTo('applications')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="applications">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>Applications</span>
+            <span id="app-badge" class="ml-auto bg-yellow-100 text-yellow-700 text-xs font-medium px-2 py-0.5 rounded-full">0</span>
+          </a>
+          <a href="#maintenance" onclick="navigateTo('maintenance')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="maintenance">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Maintenance</span>
+          </a>
+          <a href="#payments" onclick="navigateTo('payments')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="payments">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Payments</span>
+          </a>
+          <a href="#viewings" onclick="navigateTo('viewings')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="viewings">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span>Viewings</span>
+            <span id="landlord-viewings-badge" class="ml-auto bg-red-100 text-red-700 text-xs font-medium px-2 py-0.5 rounded-full hidden">0</span>
+          </a>
+          <a href="#leases" onclick="navigateTo('leases')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="leases">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>Leases</span>
+          </a>
+          <a href="#tenants" onclick="navigateTo('tenants')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="tenants">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <span>Tenants</span>
+          </a>
+          <a href="#qualifications" onclick="navigateTo('qualifications')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="qualifications">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+            <span>Qualifications</span>
+          </a>
+          <a href="#invites" onclick="navigateTo('invites')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="invites">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            <span>Invites</span>
+            <span id="invites-badge" class="ml-auto bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded-full">0</span>
+          </a>
+          <a href="#messages" onclick="navigateTo('messages')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="messages">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+            <span>Messages</span>
+            <span id="msg-badge" class="ml-auto bg-red-100 text-red-700 text-xs font-medium px-2 py-0.5 rounded-full hidden">0</span>
+          </a>
+          <a href="#reports" onclick="navigateTo('reports')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="reports">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>Reports</span>
+          </a>
+          
+          <div class="pt-4 mt-4 border-t border-gray-100">
+            <a href="#settings" onclick="navigateTo('settings')" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50" data-page="settings">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span>Settings</span>
+            </a>
+          </div>
+        </nav>
+        
+        <!-- Tier Upgrade -->
+        <div class="p-4 border-t border-gray-100">
+          <div class="bg-gradient-to-r from-accent/20 to-yellow-100 rounded-xl p-4 text-center">
+            <div class="text-xs text-gray-500 mb-1">Current Plan</div>
+            <div class="font-bold text-accent text-lg">Growth</div>
+            <a href="#" class="text-xs text-primary hover:underline block mt-2">Upgrade to Pro →</a>
+          </div>
+        </div>
+        
+        <!-- Bottom -->
+        <div class="p-4 border-t border-gray-100">
+          <button onclick="signOut()" class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64 min-h-screen pt-16 lg:pt-0">
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex items-center justify-between h-20 px-8 bg-white border-b border-gray-100">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Welcome back, James!</h1>
+          <p class="text-gray-500">Manage your properties and applications</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <input type="text" placeholder="Search properties..." class="w-64 pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          
+          <button onclick="toggleNotifications()" class="relative p-2 hover:bg-gray-100 rounded-xl transition-colors">
+            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-accent rounded-full notification-pulse"></span>
+          </button>
+          
+          <!-- User Menu -->
+          <div class="relative">
+            <button onclick="toggleUserMenu()" class="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-xl transition-colors">
+              <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-medium text-sm">
+                ${(localStorage.getItem('demo_user_name') || 'JL').charAt(0).toUpperCase()}
+              </div>
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+              <div class="px-4 py-2 border-b border-gray-100">
+                <p class="text-sm font-medium text-gray-900">${localStorage.getItem('demo_user_name') || 'User'}</p>
+                <p class="text-xs text-gray-500">${localStorage.getItem('demo_user_email') || ''}</p>
+              </div>
+              <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                Sign Out
+              </button>
+            </div>
+          </div>
+          
+          <button onclick="Tour.start([
+            { message: 'Welcome back! Use the sidebar to navigate.' },
+            { message: 'Press Ctrl+K to search, Ctrl+N to add property.' },
+            { message: 'You can toggle dark mode in Settings.' }
+          ])" class="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Help">
+            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </button>
+          
+          <button onclick="openModal('add-property')" class="btn btn-primary shadow-glow">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add Property
+          </button>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="p-4 lg:p-8">
+        
+        <!-- DASHBOARD PAGE -->
+        <div id="page-dashboard" class="page-section">
+        
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+          <!-- Properties -->
+          <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 animate-fade-in-up stagger-1">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+              </div>
+              <span class="flex items-center text-sm font-medium text-green-600">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                </svg>
+                +2
+              </span>
+            </div>
+            <div class="text-3xl font-bold text-gray-900" id="stat-properties">3</div>
+            <div class="text-sm text-gray-500">Properties</div>
+            <div class="mt-3 flex gap-1">
+              <div class="flex-1 h-1 bg-green-500 rounded-full" style="width: 60%"></div>
+              <div class="flex-1 h-1 bg-yellow-500 rounded-full" style="width: 30%"></div>
+              <div class="flex-1 h-1 bg-red-500 rounded-full" style="width: 10%"></div>
+            </div>
+          </div>
+
+          <!-- Units -->
+          <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 animate-fade-in-up stagger-2">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+              </div>
+              <span class="flex items-center text-sm font-medium text-green-600">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                </svg>
+                +4
+              </span>
+            </div>
+            <div class="text-3xl font-bold text-gray-900" id="stat-units">8</div>
+            <div class="text-sm text-gray-500">Total Units</div>
+            <div class="mt-3 text-xs text-green-600 font-medium" id="stat-occupied-text">6 occupied, 2 vacant</div>
+          </div>
+
+          <!-- Applications -->
+          <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 animate-fade-in-up stagger-3">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <span class="flex items-center text-sm font-medium text-yellow-600">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                3 pending
+              </span>
+            </div>
+            <div class="text-3xl font-bold text-gray-900">12</div>
+            <div class="text-sm text-gray-500">Applications</div>
+            <div class="mt-3 flex gap-1">
+              <div class="flex-1 h-1.5 bg-green-500 rounded-full" style="width: 58%"></div>
+              <div class="flex-1 h-1.5 bg-yellow-500 rounded-full" style="width: 25%"></div>
+              <div class="flex-1 h-1.5 bg-red-500 rounded-full" style="width: 17%"></div>
+            </div>
+          </div>
+
+          <!-- Revenue -->
+          <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 animate-fade-in-up stagger-4">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <span class="flex items-center text-sm font-medium text-green-600">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                </svg>
+                12%
+              </span>
+            </div>
+            <div class="text-3xl font-bold text-gray-900" id="stat-revenue">R78,500</div>
+            <div class="text-sm text-gray-500">Monthly Revenue</div>
+            <div class="mt-3 text-xs text-green-600 font-medium">R942,000/year projected</div>
+          </div>
+        </div>
+
+        <!-- Properties & Applications Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <!-- Properties List -->
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="font-semibold text-gray-900">My Properties</h3>
+              <button class="text-sm text-primary hover:underline">View all</button>
+            </div>
+            <div class="divide-y divide-gray-100">
+              <!-- Property 1 -->
+              <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-primary to-primary-700 rounded-xl flex items-center justify-center shadow-glow">
+                      <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 class="font-semibold text-gray-900">Sandton Luxury Apartments</h4>
+                      <p class="text-sm text-gray-500">123 Main Road, Sandton</p>
+                      <div class="flex gap-2 mt-2">
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">4 units</span>
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">4 occupied</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xl font-bold text-gray-900">R52,000</div>
+                    <div class="text-xs text-gray-500">/month</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Property 2 -->
+              <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-accent to-yellow-500 rounded-xl flex items-center justify-center">
+                      <svg class="w-7 h-7 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 class="font-semibold text-gray-900">Rosebank Gardens</h4>
+                      <p class="text-sm text-gray-500">45 Park Lane, Rosebank</p>
+                      <div class="flex gap-2 mt-2">
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">3 units</span>
+                        <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">2 occupied</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xl font-bold text-gray-900">R26,500</div>
+                    <div class="text-xs text-gray-500">/month</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Property 3 -->
+              <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                      <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 class="font-semibold text-gray-900">Hillcrest Cottage</h4>
+                      <p class="text-sm text-gray-500">78 Hill Road, Hillcrest</p>
+                      <div class="flex gap-2 mt-2">
+                        <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">1 unit</span>
+                        <span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">vacant</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xl font-bold text-gray-400">R0</div>
+                    <div class="text-xs text-gray-400">vacant</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Applications -->
+          <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="font-semibold text-gray-900">Pending Applications</h3>
+              <span class="bg-primary text-white text-xs px-2 py-1 rounded-full">3</span>
+            </div>
+            <div class="p-4 space-y-4">
+              <!-- Application 1 -->
+              <div class="border border-gray-100 rounded-xl p-4 hover:border-primary/30 transition-colors">
+                <div class="flex items-center space-x-3 mb-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">EW</div>
+                  <div class="flex-1">
+                    <div class="font-medium text-gray-900">Emily Watson</div>
+                    <div class="text-xs text-gray-500">Applied for Unit 2B</div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="text-xs text-gray-400">Applied 2 days ago</div>
+                  <div class="flex space-x-2">
+                    <button onclick="handleApplication(this, 'approved')" class="px-3 py-1.5 bg-green-500 text-white text-xs rounded-lg hover:bg-green-600 transition-colors">Accept</button>
+                    <button onclick="handleApplication(this, 'rejected')" class="px-3 py-1.5 bg-red-500 text-white text-xs rounded-lg hover:bg-red-600 transition-colors">Decline</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Application 2 -->
+              <div class="border border-gray-100 rounded-xl p-4 hover:border-primary/30 transition-colors">
+                <div class="flex items-center space-x-3 mb-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-semibold">MC</div>
+                  <div class="flex-1">
+                    <div class="font-medium text-gray-900">Michael Chen</div>
+                    <div class="text-xs text-gray-500">Applied for Unit 1A</div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="text-xs text-gray-400">Applied 3 days ago</div>
+                  <div class="flex space-x-2">
+                    <button onclick="handleApplication(this, 'approved')" class="px-3 py-1.5 bg-green-500 text-white text-xs rounded-lg hover:bg-green-600 transition-colors">Accept</button>
+                    <button onclick="handleApplication(this, 'rejected')" class="px-3 py-1.5 bg-red-500 text-white text-xs rounded-lg hover:bg-red-600 transition-colors">Decline</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Application 3 -->
+              <div class="border border-gray-100 rounded-xl p-4 hover:border-primary/30 transition-colors">
+                <div class="flex items-center space-x-3 mb-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-semibold">DN</div>
+                  <div class="flex-1">
+                    <div class="font-medium text-gray-900">David Nkosi</div>
+                    <div class="text-xs text-gray-500">Applied for Hillcrest Cottage</div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="text-xs text-gray-400">Applied 1 week ago</div>
+                  <div class="flex space-x-2">
+                    <button onclick="handleApplication(this, 'approved')" class="px-3 py-1.5 bg-green-500 text-white text-xs rounded-lg hover:bg-green-600 transition-colors">Accept</button>
+                    <button onclick="handleApplication(this, 'rejected')" class="px-3 py-1.5 bg-red-500 text-white text-xs rounded-lg hover:bg-red-600 transition-colors">Decline</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="p-3 border-t border-gray-100 text-center">
+              <a href="#" class="text-sm text-primary hover:underline font-medium">View all applications</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Maintenance & Payments Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Recent Maintenance -->
+          <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="font-semibold text-gray-900">Maintenance Requests</h3>
+              <button onclick="openModal('add-maintenance')" class="text-sm text-primary hover:underline">+ New</button>
+            </div>
+            <div class="divide-y divide-gray-100">
+              <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-900">Leaking faucet</div>
+                    <div class="text-xs text-gray-500">Unit 2B • Sandton Apartments</div>
+                  </div>
+                </div>
+                <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">In Progress</span>
+              </div>
+              <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-900">Light fixture replacement</div>
+                    <div class="text-xs text-gray-500">Unit 1A • Rosebank Gardens</div>
+                  </div>
+                </div>
+                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Completed</span>
+              </div>
+              <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-900">AC servicing</div>
+                    <div class="text-xs text-gray-500">Unit 3C • Sandton Apartments</div>
+                  </div>
+                </div>
+                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Completed</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Payments -->
+          <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="font-semibold text-gray-900">Recent Payments</h3>
+              <a href="#" class="text-sm text-primary hover:underline">View all</a>
+            </div>
+            <div class="divide-y divide-gray-100">
+              <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-900">Sarah Mthembu</div>
+                    <div class="text-xs text-gray-500">Unit 2A • March 2026</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="font-semibold text-green-600">R12,500</div>
+                  <div class="text-xs text-green-500">Paid</div>
+                </div>
+              </div>
+              <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-900">John Smith</div>
+                    <div class="text-xs text-gray-500">Unit 1B • March 2026</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="font-semibold text-green-600">R11,000</div>
+                  <div class="text-xs text-green-500">Paid</div>
+                </div>
+              </div>
+              <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-900">Robert Williams</div>
+                    <div class="text-xs text-gray-500">Unit 1C • March 2026</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="font-semibold text-yellow-600">R9,500</div>
+                  <div class="text-xs text-yellow-500">Pending</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <!-- PROPERTIES PAGE -->
+        <div id="page-properties" class="page-section hidden">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Properties</h2>
+            <p class="text-gray-500">Manage your properties</p>
+          </div>
+          <div id="properties-content" class="space-y-4"></div>
+        </div>
+
+        <!-- UNITS PAGE -->
+        <div id="page-units" class="page-section hidden">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Units</h2>
+            <p class="text-gray-500">Manage units across your properties</p>
+          </div>
+          <div id="units-content" class="space-y-4"></div>
+        </div>
+
+        <!-- APPLICATIONS PAGE -->
+        <div id="page-applications" class="page-section hidden">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Applications</h2>
+            <p class="text-gray-500">Review and manage tenant applications</p>
+          </div>
+          <div id="applications-content" class="space-y-4"></div>
+        </div>
+
+        <!-- MAINTENANCE PAGE -->
+        <div id="page-maintenance" class="page-section hidden">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Maintenance</h2>
+            <p class="text-gray-500">Track maintenance requests</p>
+          </div>
+          <div id="maintenance-content" class="space-y-4"></div>
+        </div>
+
+        <!-- PAYMENTS PAGE -->
+        <div id="page-payments" class="page-section hidden">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Payments</h2>
+            <p class="text-gray-500">Track rent payments</p>
+          </div>
+          <div id="payments-content" class="space-y-4"></div>
+        </div>
+
+        <!-- MESSAGES PAGE -->
+        <div id="page-messages" class="page-section hidden">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Messages</h2>
+            <p class="text-gray-500">Chat with tenants and agents</p>
+          </div>
+          <div id="messages-content" class="space-y-4"></div>
+        </div>
+
+        <!-- REPORTS PAGE -->
+        <div id="page-reports" class="page-section hidden">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Reports</h2>
+            <p class="text-gray-500">View performance reports and analytics</p>
+          </div>
+          <div id="reports-content" class="space-y-4"></div>
+        </div>
+
+        <!-- VIEWINGS PAGE -->
+        <div id="page-viewings" class="page-section hidden">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Viewings</h2>
+            <p class="text-gray-500">Manage property viewings</p>
+          </div>
+          <div id="landlord-viewings-content" class="space-y-4"></div>
+        </div>
+
+        <!-- LEASES PAGE -->
+        <div id="page-leases" class="page-section hidden">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Leases</h2>
+            <p class="text-gray-500">Manage tenant leases</p>
+          </div>
+          <div id="leases-content" class="space-y-4"></div>
+        </div>
+
+        <!-- TENANTS PAGE -->
+        <div id="page-tenants" class="page-section hidden">
+          <div class="mb-6 flex justify-between items-center">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">My Tenants</h2>
+              <p class="text-gray-500">Manage tenants in your properties</p>
+            </div>
+            <button onclick="openModal('add-tenant')" class="btn btn-primary whitespace-nowrap">Add Tenant</button>
+          </div>
+          <div id="tenants-content" class="space-y-4"></div>
+        </div>
+
+        <!-- QUALIFICATIONS PAGE -->
+        <div id="page-qualifications" class="page-section hidden">
+          <div class="mb-6 flex justify-between items-center">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Qualification Questions</h2>
+              <p class="text-gray-500">Create custom questions to screen tenant applications</p>
+            </div>
+            <button onclick="openModal('add-question')" class="btn btn-primary whitespace-nowrap">Add Question</button>
+          </div>
+          <div id="qualifications-content" class="space-y-4"></div>
+        </div>
+
+        <!-- INVITES PAGE -->
+        <div id="page-invites" class="page-section hidden">
+          <div class="mb-6 flex justify-between items-center">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Invitations</h2>
+              <p class="text-gray-500">Invite tenants or agents to join your properties</p>
+            </div>
+            <button onclick="openModal('send-invite')" class="btn btn-primary whitespace-nowrap">Send Invite</button>
+          </div>
+          <div id="invites-content" class="space-y-4"></div>
+        </div>
+
+        <!-- SETTINGS PAGE -->
+        <div id="page-settings" class="page-section hidden">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Settings</h2>
+            <p class="text-gray-500">Manage your account settings</p>
+          </div>
+          
+          <!-- Appearance -->
+          <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+            <h3 class="font-semibold text-gray-900 mb-4">Appearance</h3>
+            <div class="space-y-4">
+              <label class="flex items-center justify-between">
+                <span class="text-gray-700">Dark Mode</span>
+                <button id="dark-mode-toggle" onclick="toggleDarkMode()" class="relative w-12 h-6 bg-gray-200 rounded-full transition-colors">
+                  <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform"></span>
+                </button>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Notifications -->
+          <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+            <h3 class="font-semibold text-gray-900 mb-4">Notification Preferences</h3>
+            <div class="space-y-4">
+              <label class="flex items-center justify-between">
+                <span class="text-gray-700">Email notifications for new applications</span>
+                <input type="checkbox" checked class="toggle-switch" onchange="toggleSetting(this, 'email_applications')">
+              </label>
+              <label class="flex items-center justify-between">
+                <span class="text-gray-700">Email notifications for payments</span>
+                <input type="checkbox" checked class="toggle-switch" onchange="toggleSetting(this, 'email_payments')">
+              </label>
+              <label class="flex items-center justify-between">
+                <span class="text-gray-700">Email notifications for maintenance</span>
+                <input type="checkbox" class="toggle-switch" onchange="toggleSetting(this, 'email_maintenance')">
+              </label>
+            </div>
+          </div>
+          
+          <!-- Keyboard Shortcuts -->
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <h3 class="font-semibold text-gray-900 mb-4">Keyboard Shortcuts</h3>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Search</span>
+                <kbd class="px-2 py-1 bg-gray-100 rounded text-xs">Ctrl + K</kbd>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">New Property</span>
+                <kbd class="px-2 py-1 bg-gray-100 rounded text-xs">Ctrl + N</kbd>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Close Modal</span>
+                <kbd class="px-2 py-1 bg-gray-100 rounded text-xs">Esc</kbd>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Notifications Dropdown -->
+  <div id="notifications-dropdown" class="fixed top-20 right-8 w-96 bg-white rounded-2xl shadow-xl border border-gray-100 hidden z-50 animate-scale-in">
+    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+      <h3 class="font-semibold text-gray-900">Notifications</h3>
+      <button onclick="markAllNotificationsRead()" class="text-sm text-primary hover:underline">Mark all read</button>
+    </div>
+    <div id="landlord-notifications-list" class="max-h-96 overflow-y-auto">
+      <!-- Notifications loaded dynamically -->
+    </div>
+  </div>
+
+  <!-- Add Property Modal -->
+  <div id="modal-add-property" class="modal-overlay hidden">
+    <div class="modal animate-scale-in max-w-lg">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-gray-900">Add New Property</h3>
+        <button onclick="closeModal('add-property')" class="p-1 hover:bg-gray-100 rounded-lg">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form onsubmit="handleAddProperty(event)" class="modal-body space-y-4">
+        <div>
+          <label class="form-label">Property Name</label>
+          <input type="text" name="name" class="form-input" required placeholder="e.g., Sandton Luxury Apartments">
+        </div>
+        <div>
+          <label class="form-label">Address</label>
+          <input type="text" name="address" class="form-input" required placeholder="Street address">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="form-label">City/Suburb</label>
+            <input type="text" name="city" class="form-input" required placeholder="e.g., Sandton">
+          </div>
+          <div>
+            <label class="form-label">Postal Code</label>
+            <input type="text" name="postal_code" class="form-input" placeholder="e.g., 2196">
+          </div>
+        </div>
+        <div>
+          <label class="form-label">Property Type</label>
+          <select name="property_type" class="form-select">
+            <option value="apartment">Apartment</option>
+            <option value="house">House</option>
+            <option value="flat">Flat</option>
+            <option value="townhouse">Townhouse</option>
+            <option value="room">Room</option>
+            <option value="studio">Studio</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Description</label>
+          <textarea name="description" class="form-textarea" rows="3" placeholder="Describe the property..."></textarea>
+        </div>
+        <div class="modal-footer !border-0 !p-0 !mt-4">
+          <button type="button" onclick="closeModal('add-property')" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Property</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Unit Modal -->
+  <div id="modal-add-unit" class="modal-overlay hidden">
+    <div class="modal animate-scale-in max-w-lg">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-gray-900">Add New Unit</h3>
+        <button onclick="closeModal('add-unit')" class="p-1 hover:bg-gray-100 rounded-lg">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form onsubmit="handleAddUnit(event)" class="modal-body space-y-4">
+        <div>
+          <label class="form-label">Property</label>
+          <select name="property_id" id="unit-property-select" class="form-select" required>
+            <option value="">Select property...</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Unit Number</label>
+          <input type="text" name="unit_number" class="form-input" required placeholder="e.g., 1A, 101">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="form-label">Bedrooms</label>
+            <input type="number" name="bedrooms" class="form-input" required min="0" placeholder="0">
+          </div>
+          <div>
+            <label class="form-label">Bathrooms</label>
+            <input type="number" name="bathrooms" class="form-input" required min="0" placeholder="0">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="form-label">Size (m²)</label>
+            <input type="number" name="sqm" class="form-input" required min="0" placeholder="0">
+          </div>
+          <div>
+            <label class="form-label">Monthly Rent (R)</label>
+            <input type="number" name="rent_amount" class="form-input" required min="0" placeholder="0">
+          </div>
+        </div>
+        <div>
+          <label class="form-label">Deposit (R)</label>
+          <input type="number" name="deposit_amount" class="form-input" min="0" placeholder="Optional">
+        </div>
+        <div class="modal-footer !border-0 !p-0 !mt-4">
+          <button type="button" onclick="closeModal('add-unit')" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Unit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- New Message Modal -->
+  <div id="modal-landlord-new-message" class="modal-overlay hidden">
+    <div class="modal animate-scale-in max-w-md">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-gray-900">New Conversation</h3>
+        <button onclick="closeModal('landlord-new-message')" class="p-1 hover:bg-gray-100 rounded-lg">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm text-gray-500 mb-3">Select a person to message:</p>
+        <div id="landlord-new-message-list" class="space-y-2 max-h-64 overflow-y-auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Lease Modal -->
+  <div id="modal-add-lease" class="modal-overlay hidden">
+    <div class="modal animate-scale-in max-w-lg">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-gray-900">Create New Lease</h3>
+        <button onclick="closeModal('add-lease')" class="p-1 hover:bg-gray-100 rounded-lg">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form onsubmit="handleCreateLease(event)" class="modal-body space-y-4">
+        <div>
+          <label class="form-label">Select Tenant</label>
+          <select id="lease-tenant" class="form-select" required>
+            <option value="">Select a tenant</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Select Property</label>
+          <select id="lease-property" class="form-select" required onchange="loadPropertyUnits()">
+            <option value="">Select a property</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Select Unit</label>
+          <select id="lease-unit" class="form-select" required>
+            <option value="">Select a unit</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="form-label">Start Date</label>
+            <input type="date" id="lease-start" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">End Date</label>
+            <input type="date" id="lease-end" class="form-input" required>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="form-label">Monthly Rent (R)</label>
+            <input type="number" id="lease-rent" class="form-input" placeholder="12500" required>
+          </div>
+          <div>
+            <label class="form-label">Deposit (R)</label>
+            <input type="number" id="lease-deposit" class="form-input" placeholder="25000" required>
+          </div>
+        </div>
+        <div class="modal-footer !border-0 !p-0 !mt-4">
+          <button type="button" onclick="closeModal('add-lease')" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Lease</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Question Modal -->
+  <div id="modal-add-question" class="modal-overlay hidden">
+    <div class="modal animate-scale-in max-w-lg">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-gray-900">Add Qualification Question</h3>
+        <button onclick="closeModal('add-question')" class="p-1 hover:bg-gray-100 rounded-lg">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form onsubmit="handleCreateQuestion(event)" class="modal-body space-y-4">
+        <div>
+          <label class="form-label">Question</label>
+          <input type="text" id="question-text" class="form-input" placeholder="e.g., What is your employment status?" required>
+        </div>
+        <div>
+          <label class="form-label">Question Type</label>
+          <select id="question-type" class="form-select" onchange="toggleQuestionOptions()">
+            <option value="single_choice">Single Choice (Multiple Options)</option>
+            <option value="yes_no">Yes/No</option>
+            <option value="text">Free Text</option>
+          </select>
+        </div>
+        <div id="question-options-container">
+          <label class="form-label">Options (one per line)</label>
+          <textarea id="question-options" class="form-input" rows="3" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
+        </div>
+        <div>
+          <label class="form-label">Preferred Answer (gets maximum points)</label>
+          <input type="text" id="question-preferred" class="form-input" placeholder="e.g., Employed" required>
+        </div>
+        <div>
+          <label class="form-label">Weight (points for preferred answer)</label>
+          <input type="number" id="question-weight" class="form-input" value="10" min="1" max="100" required>
+        </div>
+        <div>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="question-required" class="toggle-switch" checked>
+            <span class="text-gray-700">Required question</span>
+          </label>
+        </div>
+        <div class="modal-footer !border-0 !p-0 !mt-4">
+          <button type="button" onclick="closeModal('add-question')" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Question</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Send Invite Modal -->
+  <div id="modal-send-invite" class="modal-overlay hidden">
+    <div class="modal animate-scale-in max-w-lg">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-gray-900">Send Invitation</h3>
+        <button onclick="closeModal('send-invite')" class="p-1 hover:bg-gray-100 rounded-lg">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form onsubmit="handleSendInvite(event)" class="modal-body space-y-4">
+        <div>
+          <label class="form-label">Email Address</label>
+          <input type="email" id="invite-email" class="form-input" placeholder="tenant@email.com" required>
+        </div>
+        <div>
+          <label class="form-label">Role</label>
+          <select id="invite-role" class="form-select">
+            <option value="tenant">Tenant</option>
+            <option value="agent">Agent</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Personal Message (optional)</label>
+          <textarea id="invite-message" class="form-input" rows="2" placeholder="Add a personal message..."></textarea>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-3">
+          <p class="text-sm text-gray-600">An invitation email will be sent with a link to join TenantMatch and apply to your properties.</p>
+        </div>
+        <div class="modal-footer !border-0 !p-0 !mt-4">
+          <button type="button" onclick="closeModal('send-invite')" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send Invite</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/shared.js"></script>
+  <script src="../js/security.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="js/data.js"></script>
+  <script>
+    // Auth check - redirect to auth if not logged in
+    (function() {
+      const userId = localStorage.getItem('demo_user_id');
+      const role = localStorage.getItem('demo_role');
+      if (!userId || !role) {
+        window.location.href = '../auth.html';
+        return;
+      }
+    })();
+
+    // Current logged in user - from localStorage or default
+    const CURRENT_USER_ID = localStorage.getItem('demo_user_id') || 'u2';
+    const CURRENT_USER = { 
+      id: CURRENT_USER_ID, 
+      full_name: localStorage.getItem('demo_user_name') || (CURRENT_USER_ID === 'u2' ? 'James Kgosana' : 'Demo Landlord'), 
+      email: localStorage.getItem('demo_user_email') || 'demo@landlord.com',
+      role: localStorage.getItem('demo_role') || 'landlord'
+    };
+
+    // Redirect to auth if not logged in
+    if (!localStorage.getItem('demo_user_id') && !localStorage.getItem('demo_role')) {
+      window.location.href = '../auth.html';
+    }
+
+    // Router
+    function navigateTo(page) {
+      window.location.hash = page;
+    }
+
+    function getPageFromURL() {
+      return window.location.hash.replace('#', '') || 'dashboard';
+    }
+
+    function loadPage(page) {
+      // Update nav active state
+      document.querySelectorAll('.sidebar-item').forEach(link => {
+        link.classList.remove('active', 'text-primary', 'font-medium');
+        link.classList.add('text-gray-600');
+        if (link.dataset.page === page) {
+          link.classList.add('active', 'text-primary', 'font-medium');
+          link.classList.remove('text-gray-600');
+        }
+      });
+
+      // Hide all pages
+      document.querySelectorAll('.page-section').forEach(p => {
+        p.classList.add('hidden');
+      });
+
+      // Show current page
+      const pageEl = document.getElementById(`page-${page}`);
+      if (pageEl) {
+        pageEl.classList.remove('hidden');
+        pageEl.classList.add('animate-fade-in');
+      }
+
+      // Load data for the page
+      loadPageData(page);
+    }
+
+    function loadPageData(page) {
+      switch(page) {
+        case 'dashboard':
+          loadDashboardData();
+          break;
+        case 'properties':
+          loadPropertiesData();
+          break;
+        case 'units':
+          loadUnitsData();
+          break;
+        case 'applications':
+          loadApplicationsData();
+          break;
+        case 'maintenance':
+          loadMaintenanceData();
+          break;
+        case 'payments':
+          loadPaymentsData();
+          break;
+        case 'messages':
+          loadMessagesData();
+          break;
+        case 'reports':
+          loadReportsData();
+          break;
+        case 'qualifications':
+          loadQualificationsData();
+          break;
+        case 'invites':
+          loadInvitesData();
+          break;
+        case 'viewings':
+          loadLandlordViewingsData();
+          break;
+        case 'leases':
+          loadLeasesData();
+          break;
+        case 'tenants':
+          loadTenantsData();
+          break;
+        case 'settings':
+          loadSettingsData();
+          break;
+      }
+    }
+
+    // Page data loaders
+    function loadSettingsData() {
+      console.log('Settings loaded');
+    }
+
+    function loadDashboardData() {
+      const stats = MockData.api.getStats('landlord', CURRENT_USER_ID);
+      const viewingsCount = MockData.api.getViewings(CURRENT_USER_ID, 'landlord').filter(v => v.status === 'scheduled').length;
+      const invitesCount = MockData.api.getInvitations({ invited_by: CURRENT_USER_ID, status: 'pending' }).length;
+      
+      // Update stat cards
+      document.getElementById('stat-properties').textContent = stats.totalProperties;
+      document.getElementById('stat-units').textContent = stats.totalUnits;
+      const occupiedText = document.getElementById('stat-occupied-text');
+      if (occupiedText) {
+        occupiedText.textContent = `${stats.occupiedUnits} occupied, ${stats.totalUnits - stats.occupiedUnits} vacant`;
+      }
+      document.getElementById('stat-revenue').textContent = 'R' + stats.totalRevenue.toLocaleString();
+      
+      // Update badges
+      document.getElementById('app-badge').textContent = stats.pendingApplications;
+      
+      // Update viewings badge
+      const viewingsBadge = document.getElementById('landlord-viewings-badge');
+      if (viewingsBadge) {
+        if (viewingsCount > 0) {
+          viewingsBadge.textContent = viewingsCount;
+          viewingsBadge.classList.remove('hidden');
+        } else {
+          viewingsBadge.classList.add('hidden');
+        }
+      }
+      
+      // Update invites badge
+      const invitesBadge = document.getElementById('invites-badge');
+      if (invitesBadge) {
+        if (invitesCount > 0) {
+          invitesBadge.textContent = invitesCount;
+        }
+      }
+    }
+
+    function loadPropertiesData(searchTerm = '') {
+      let properties = MockData.api.getProperties({ owner_id: CURRENT_USER_ID });
+      const container = document.getElementById('properties-content');
+      
+      // Filter by search term
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        properties = properties.filter(p => 
+          p.name.toLowerCase().includes(term) ||
+          p.address.toLowerCase().includes(term) ||
+          p.suburb.toLowerCase().includes(term) ||
+          p.city.toLowerCase().includes(term)
+        );
+      }
+      
+      if (properties.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <p class="text-gray-500">${searchTerm ? 'No properties match your search' : 'No properties yet'}</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="mb-4 flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <input type="text" id="property-search" placeholder="Search properties..." 
+              class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              value="${searchTerm}"
+              oninput="filterProperties(this.value)">
+            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <button onclick="openModal('add-property')" class="btn btn-primary whitespace-nowrap">Add New Property</button>
+        </div>
+      ` + properties.map(p => `
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">${p.name}</h3>
+              <p class="text-gray-500">${p.address}, ${p.suburb}</p>
+              <div class="flex gap-2 mt-2">
+                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">${p.property_type}</span>
+                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">${p.units_count} units</span>
+              </div>
+            </div>
+            <button onclick="openAddUnitModalForProperty('${p.id}')" class="btn btn-secondary">Add Unit</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterProperties(value) {
+      loadPropertiesData(value);
+    }
+
+    function loadUnitsData() {
+      const properties = MockData.api.getProperties({ owner_id: CURRENT_USER_ID });
+      const propertyIds = properties.map(p => p.id);
+      const units = MockData.api.getUnits().filter(u => propertyIds.includes(u.property_id));
+      const container = document.getElementById('units-content');
+
+      if (units.length === 0) {
+        container.innerHTML = '<div class="bg-white rounded-2xl border border-gray-100 p-8 text-center"><p class="text-gray-500">No units yet</p></div>';
+        return;
+      }
+
+      container.innerHTML = units.map(u => {
+        const property = MockData.api.getPropertyById(u.property_id);
+        const statusClass = u.status === 'occupied' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
+        return `
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900">Unit ${u.unit_number}</h3>
+                <p class="text-gray-500">${property?.name || 'Unknown Property'}</p>
+                <div class="flex gap-4 mt-2 text-sm text-gray-600">
+                  <span>${u.bedrooms} bed</span>
+                  <span>${u.bathrooms} bath</span>
+                  <span>${u.sqm} m²</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-xl font-bold text-gray-900">R${u.rent_amount.toLocaleString()}</div>
+                <span class="text-xs ${statusClass} px-2 py-1 rounded-full">${u.status}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function loadApplicationsData() {
+      const properties = MockData.api.getProperties({ owner_id: CURRENT_USER_ID });
+      const propertyIds = properties.map(p => p.id);
+      const applications = MockData.api.getApplications().filter(a => propertyIds.includes(a.property_id));
+      const container = document.getElementById('applications-content');
+
+      if (applications.length === 0) {
+        container.innerHTML = '<div class="bg-white rounded-2xl border border-gray-100 p-8 text-center"><p class="text-gray-500">No applications</p></div>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="mb-4 flex justify-end">
+          <button onclick="exportApplications()" class="btn btn-secondary btn-sm">Export CSV</button>
+        </div>
+      ` + applications.map(a => {
+        const tenant = MockData.api.getUserById(a.tenant_id);
+        const property = MockData.api.getPropertyById(a.property_id);
+        const unit = MockData.api.getUnitById(a.unit_id);
+        const docs = MockData.api.getDocuments(a.tenant_id);
+        const verifiedDocs = docs.filter(d => d.status === 'verified');
+        const isVerified = verifiedDocs.length >= 2;
+        const statusClass = a.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : a.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+        
+        return `
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                  ${Utils.initials(tenant?.full_name)}
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                    ${Security.escapeHtml(tenant?.full_name || 'Unknown Tenant')}
+                    ${isVerified ? '<span class="text-green-600" title="Verified Tenant"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg></span>' : ''}
+                  </h3>
+                  <p class="text-gray-500">${Security.escapeHtml(property?.name || 'Unknown')} - Unit ${unit?.unit_number || '?'}</p>
+                  <p class="text-xs text-gray-400 mt-1">Applied ${Utils.timeAgo(a.applied_at)}</p>
+                </div>
+              </div>
+              <span class="text-xs ${statusClass} px-3 py-1 rounded-full">${a.status}</span>
+            </div>
+            ${a.status === 'pending' ? `
+              <div class="mt-4 flex gap-2">
+                <button onclick="handleAppAction('${a.id}', 'approved')" class="px-4 py-2 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600">Approve</button>
+                <button onclick="handleAppAction('${a.id}', 'rejected')" class="px-4 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600">Reject</button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function exportApplications() {
+      const properties = MockData.api.getProperties({ owner_id: CURRENT_USER_ID });
+      const propertyIds = properties.map(p => p.id);
+      const applications = MockData.api.getApplications().filter(a => propertyIds.includes(a.property_id));
+      
+      const data = applications.map(a => ({
+        Tenant: MockData.api.getUserById(a.tenant_id)?.full_name || 'Unknown',
+        Property: MockData.api.getPropertyById(a.property_id)?.name || 'Unknown',
+        Unit: MockData.api.getUnitById(a.unit_id)?.unit_number || '?',
+        Status: a.status,
+        Applied: a.applied_at,
+        Reviewed: a.reviewed_at || ''
+      }));
+      
+      Utils.exportToCSV(data, 'applications');
+      Toast.success('Applications exported!');
+      Analytics.track('export_applications');
+    }
+
+    function loadMaintenanceData() {
+      const properties = MockData.api.getProperties({ owner_id: CURRENT_USER_ID });
+      const propertyIds = properties.map(p => p.id);
+      const maintenance = MockData.api.getMaintenance().filter(m => propertyIds.includes(m.property_id));
+      const container = document.getElementById('maintenance-content');
+
+      if (maintenance.length === 0) {
+        container.innerHTML = '<div class="bg-white rounded-2xl border border-gray-100 p-8 text-center"><p class="text-gray-500">No maintenance requests</p></div>';
+        return;
+      }
+
+      const statusColors = {
+        'open': 'bg-yellow-100 text-yellow-700',
+        'in_progress': 'bg-blue-100 text-blue-700',
+        'completed': 'bg-green-100 text-green-700'
+      };
+
+      container.innerHTML = maintenance.map(m => {
+        const property = MockData.api.getPropertyById(m.property_id);
+        const unit = MockData.api.getUnitById(m.unit_id);
+        return `
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 class="font-semibold text-gray-900">${m.title}</h3>
+                <p class="text-gray-500">${property?.name || 'Unknown'} - Unit ${unit?.unit_number || '?'}</p>
+                <p class="text-sm text-gray-400 mt-1">${m.description}</p>
+              </div>
+              <span class="text-xs ${statusColors[m.status] || 'bg-gray-100 text-gray-700'} px-3 py-1 rounded-full">${m.status.replace('_', ' ')}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function loadPaymentsData() {
+      const properties = MockData.api.getProperties({ owner_id: CURRENT_USER_ID });
+      const propertyIds = properties.map(p => p.id);
+      const units = MockData.api.getUnits().filter(u => propertyIds.includes(u.property_id));
+      const unitIds = units.map(u => u.id);
+      const payments = MockData.api.getPayments().filter(p => unitIds.includes(p.unit_id));
+      const container = document.getElementById('payments-content');
+
+      if (payments.length === 0) {
+        container.innerHTML = '<div class="bg-white rounded-2xl border border-gray-100 p-8 text-center"><p class="text-gray-500">No payments yet</p></div>';
+        return;
+      }
+
+      container.innerHTML = payments.map(p => {
+        const tenant = MockData.api.getUserById(p.tenant_id);
+        const unit = MockData.api.getUnitById(p.unit_id);
+        const statusClass = p.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
+        return `
+          <div class="bg-white rounded-2xl border border-gray-100 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-semibold text-gray-900">${tenant?.full_name || 'Unknown Tenant'}</h3>
+                <p class="text-gray-500">${unit?.unit_number ? 'Unit ' + unit.unit_number : 'Unknown Unit'} - ${p.payment_type}</p>
+              </div>
+              <div class="text-right">
+                <div class="text-xl font-bold text-gray-900">R${p.amount.toLocaleString()}</div>
+                <span class="text-xs ${statusClass} px-2 py-1 rounded-full">${p.status}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    let landlordConversationId = null;
+
+    function loadMessagesData(conversationId = null) {
+      const container = document.getElementById('messages-content');
+      const conversations = MockData.api.getConversations(CURRENT_USER_ID);
+      const unreadCount = MockData.api.getUnreadMessageCount(CURRENT_USER_ID);
+      
+      const badge = document.getElementById('msg-badge');
+      if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      if (conversationId) {
+        landlordConversationId = conversationId;
+        MockData.api.markConversationAsRead(conversationId, CURRENT_USER_ID);
+      }
+
+      if (landlordConversationId) {
+        const conversation = MockData.api.getConversationById(landlordConversationId);
+        const otherUser = MockData.api.getOtherParticipant(conversation, CURRENT_USER_ID);
+        const messages = MockData.api.getMessages(landlordConversationId);
+        
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-700 rounded-full flex items-center justify-center text-white font-semibold">
+                  ${otherUser.full_name.split(' ').map(n => n[0]).join('')}
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">${otherUser.full_name}</h3>
+                  <p class="text-xs text-gray-500">${otherUser.role.charAt(0).toUpperCase() + otherUser.role.slice(1)}</p>
+                </div>
+              </div>
+              <button onclick="loadMessagesData()" class="p-2 hover:bg-gray-100 rounded-lg">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="h-96 overflow-y-auto p-4 space-y-4 bg-gray-50">
+              ${messages.map(m => {
+                const isMe = m.sender_id === CURRENT_USER_ID;
+                return `
+                  <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
+                    <div class="max-w-[70%] ${isMe ? 'bg-primary text-white' : 'bg-white border border-gray-200'} rounded-2xl px-4 py-2 ${isMe ? 'rounded-br-md' : 'rounded-bl-md'}">
+                      <p class="text-sm">${m.content}</p>
+                      <p class="text-xs ${isMe ? 'text-primary-200' : 'text-gray-400'} mt-1">${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+            <form onsubmit="sendLandlordMessage(event)" class="p-4 border-t border-gray-100 flex gap-2">
+              <input type="text" id="landlord-message-input" placeholder="Type a message..." class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary">
+              <button type="submit" class="btn btn-primary px-6">Send</button>
+            </form>
+          </div>
+        `;
+        return;
+      }
+
+      if (conversations.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+            <p class="text-gray-500 mb-4">No messages yet</p>
+            <button onclick="openLandlordNewMessage()" class="btn btn-primary">Start a Conversation</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${conversations.map(conv => {
+            const otherUser = MockData.api.getOtherParticipant(conv, CURRENT_USER_ID);
+            const unread = conv.unread_count[CURRENT_USER_ID] || 0;
+            return `
+              <div onclick="loadMessagesData('${conv.id}')" class="bg-white rounded-2xl border border-gray-100 p-4 hover:shadow-lg transition-shadow cursor-pointer ${unread > 0 ? 'border-l-4 border-l-primary' : ''}">
+                <div class="flex items-center space-x-3">
+                  <div class="w-12 h-12 bg-gradient-to-br from-primary to-primary-700 rounded-full flex items-center justify-center text-white font-semibold">
+                    ${otherUser.full_name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                      <h3 class="font-semibold text-gray-900">${otherUser.full_name}</h3>
+                      ${unread > 0 ? `<span class="bg-primary text-white text-xs px-2 py-0.5 rounded-full">${unread}</span>` : ''}
+                    </div>
+                    <p class="text-sm text-gray-500 truncate">${conv.last_message || 'No messages yet'}</p>
+                    <p class="text-xs text-gray-400">${new Date(conv.last_message_at).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <button onclick="openLandlordNewMessage()" class="btn btn-primary w-full mt-4">New Conversation</button>
+      `;
+    }
+
+    function sendLandlordMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('landlord-message-input');
+      const content = input.value.trim();
+      if (!content || !landlordConversationId) return;
+
+      MockData.api.sendMessage(landlordConversationId, CURRENT_USER_ID, content);
+      input.value = '';
+      loadMessagesData(landlordConversationId);
+    }
+
+    function openLandlordNewMessage() {
+      const tenants = MockData.api.getUsers({ role: 'tenant' });
+      const agents = MockData.api.getUsers({ role: 'agent' });
+      const users = [...tenants, ...agents];
+      
+      const container = document.getElementById('landlord-new-message-list');
+      if (container) {
+        container.innerHTML = users.map(u => `
+          <div onclick="startLandlordConversation('${u.id}')" class="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer">
+            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-700 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+              ${u.full_name.split(' ').map(n => n[0]).join('')}
+            </div>
+            <div>
+              <div class="font-medium text-gray-900">${u.full_name}</div>
+              <div class="text-xs text-gray-500">${u.role.charAt(0).toUpperCase() + u.role.slice(1)}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+      openModal('landlord-new-message');
+    }
+
+    function startLandlordConversation(userId) {
+      const conv = MockData.api.createConversation([CURRENT_USER_ID, userId]);
+      closeModal('landlord-new-message');
+      landlordConversationId = conv.id;
+      loadMessagesData(conv.id);
+    }
+
+    function loadReportsData() {
+      const properties = MockData.api.getProperties({ owner_id: CURRENT_USER_ID });
+      const propertyIds = properties.map(p => p.id);
+      const units = MockData.api.getUnits().filter(u => propertyIds.includes(u.property_id));
+      const unitIds = units.map(u => u.id);
+      const applications = MockData.api.getApplications().filter(a => propertyIds.includes(a.property_id));
+      const payments = MockData.api.getPayments().filter(p => unitIds.includes(p.unit_id));
+      const maintenance = MockData.api.getMaintenance().filter(m => propertyIds.includes(m.property_id));
+      const viewings = MockData.api.getViewings(CURRENT_USER_ID, 'landlord');
+      
+      const container = document.getElementById('reports-content');
+      
+      // Calculate metrics
+      const occupiedUnits = units.filter(u => u.status === 'occupied').length;
+      const occupancyRate = units.length > 0 ? Math.round((occupiedUnits / units.length) * 100) : 0;
+      const totalRevenue = payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
+      const pendingApplications = applications.filter(a => a.status === 'pending').length;
+      const openMaintenance = maintenance.filter(m => m.status === 'open' || m.status === 'in_progress').length;
+      
+      // Monthly revenue data
+      const monthlyData = [
+        { month: 'Oct', amount: 42000 },
+        { month: 'Nov', amount: 48000 },
+        { month: 'Dec', amount: 45000 },
+        { month: 'Jan', amount: 52000 },
+        { month: 'Feb', amount: 58000 },
+        { month: 'Mar', amount: 62000 },
+      ];
+      const maxRevenue = Math.max(...monthlyData.map(m => m.amount));
+
+      container.innerHTML = `
+        <!-- Summary Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+          <div class="bg-white rounded-2xl p-6 border border-gray-100">
+            <div class="text-sm text-gray-500 mb-1">Total Revenue</div>
+            <div class="text-3xl font-bold text-gray-900">R${totalRevenue.toLocaleString()}</div>
+            <div class="text-sm text-green-600 mt-1">This month: R${monthlyData[monthlyData.length-1].amount.toLocaleString()}</div>
+          </div>
+          <div class="bg-white rounded-2xl p-6 border border-gray-100">
+            <div class="text-sm text-gray-500 mb-1">Occupancy Rate</div>
+            <div class="text-3xl font-bold text-gray-900">${occupancyRate}%</div>
+            <div class="text-sm text-gray-400 mt-1">${occupiedUnits}/${units.length} units</div>
+          </div>
+          <div class="bg-white rounded-2xl p-6 border border-gray-100">
+            <div class="text-sm text-gray-500 mb-1">Pending Applications</div>
+            <div class="text-3xl font-bold text-gray-900">${pendingApplications}</div>
+            <div class="text-sm text-gray-400 mt-1">Awaiting review</div>
+          </div>
+          <div class="bg-white rounded-2xl p-6 border border-gray-100">
+            <div class="text-sm text-gray-500 mb-1">Open Maintenance</div>
+            <div class="text-3xl font-bold text-gray-900">${openMaintenance}</div>
+            <div class="text-sm text-gray-400 mt-1">Requests</div>
+          </div>
+        </div>
+
+        <!-- Revenue Chart -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
+          <h3 class="font-semibold text-gray-900 mb-6">Revenue Trend</h3>
+          <div class="h-64 flex items-end justify-between gap-2">
+            ${monthlyData.map(m => `
+              <div class="flex-1 flex flex-col items-center">
+                <div class="w-full bg-primary/20 rounded-t-lg relative" style="height: ${(m.amount / maxRevenue) * 200}px">
+                  <div class="absolute bottom-0 left-0 right-0 bg-primary rounded-t-lg" style="height: ${(m.amount / maxRevenue) * 200}px"></div>
+                </div>
+                <div class="text-xs text-gray-500 mt-2">${m.month}</div>
+                <div class="text-xs font-medium text-gray-700">R${(m.amount / 1000).toFixed(0)}k</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Property Performance -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
+          <h3 class="font-semibold text-gray-900 mb-4">Property Performance</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-gray-100">
+                  <th class="text-left py-3 px-4 text-sm font-medium text-gray-500">Property</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-gray-500">Units</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-gray-500">Occupied</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-gray-500">Revenue</th>
+                  <th class="text-left py-3 px-4 text-sm font-medium text-gray-500">Applications</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${properties.map(p => {
+                  const propUnits = units.filter(u => u.property_id === p.id);
+                  const occupied = propUnits.filter(u => u.status === 'occupied').length;
+                  const revenue = payments.filter(pay => propUnits.some(u => u.id === pay.unit_id) && pay.status === 'paid').reduce((sum, pay) => sum + pay.amount, 0);
+                  const apps = applications.filter(a => a.property_id === p.id);
+                  return `
+                    <tr class="border-b border-gray-50 hover:bg-gray-50">
+                      <td class="py-3 px-4">
+                        <div class="font-medium text-gray-900">${p.name}</div>
+                        <div class="text-xs text-gray-500">${p.city}</div>
+                      </td>
+                      <td class="py-3 px-4 text-gray-600">${propUnits.length}</td>
+                      <td class="py-3 px-4">
+                        <span class="px-2 py-1 ${occupied === propUnits.length ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'} rounded-full text-xs">${occupied}/${propUnits.length}</span>
+                      </td>
+                      <td class="py-3 px-4 text-gray-900 font-medium">R${revenue.toLocaleString()}</td>
+                      <td class="py-3 px-4">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">${apps.length} pending</span>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Viewings -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
+          <h3 class="font-semibold text-gray-900 mb-4">Scheduled Viewings</h3>
+          ${viewings.length === 0 ? '<p class="text-gray-500">No scheduled viewings</p>' : `
+            <div class="space-y-3">
+              ${viewings.slice(0, 5).map(v => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">${v.property?.name || 'Unknown'}</div>
+                      <div class="text-xs text-gray-500">${v.user?.full_name || 'Unknown'} - ${v.scheduled_date} at ${v.scheduled_time}</div>
+                    </div>
+                  </div>
+                  <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">${v.status}</span>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function loadLandlordViewingsData() {
+      const viewings = MockData.api.getViewings(CURRENT_USER_ID, 'landlord');
+      const container = document.getElementById('landlord-viewings-content');
+      
+      // Update badge
+      const badge = document.getElementById('landlord-viewings-badge');
+      const pendingCount = viewings.filter(v => v.status === 'scheduled').length;
+      if (pendingCount > 0) {
+        badge.textContent = pendingCount;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      if (viewings.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <p class="text-gray-500 mb-4">No scheduled viewings yet</p>
+          </div>
+        `;
+        return;
+      }
+
+      const statusColors = {
+        'scheduled': 'bg-blue-100 text-blue-700',
+        'completed': 'bg-green-100 text-green-700',
+        'cancelled': 'bg-red-100 text-red-700'
+      };
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          ${viewings.map(v => `
+            <div class="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span class="text-primary font-semibold">${v.user?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}</span>
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">${v.user?.full_name || 'Unknown'}</h3>
+                    <p class="text-xs text-gray-500">${v.property?.name || 'Unknown'}</p>
+                  </div>
+                </div>
+                <span class="px-2 py-1 ${statusColors[v.status]} rounded-full text-xs">${v.status}</span>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-3 mb-4">
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  ${v.scheduled_date} at ${v.scheduled_time}
+                </div>
+                ${v.notes ? `<p class="text-xs text-gray-500 mt-2">Notes: ${v.notes}</p>` : ''}
+              </div>
+              ${v.status === 'scheduled' ? `
+                <div class="flex gap-2">
+                  <button onclick="confirmViewing('${v.id}')" class="btn btn-primary btn-sm flex-1">Confirm</button>
+                  <button onclick="rejectViewing('${v.id}')" class="btn btn-secondary btn-sm flex-1">Decline</button>
+                  <button onclick="messageTenant('${v.user_id}')" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function confirmViewing(viewingId) {
+      const viewing = MockData.viewings.find(v => v.id === viewingId);
+      if (viewing) {
+        viewing.status = 'completed';
+        Toast.success('Viewing confirmed!');
+        loadLandlordViewingsData();
+      }
+    }
+
+    function rejectViewing(viewingId) {
+      const viewing = MockData.viewings.find(v => v.id === viewingId);
+      if (viewing) {
+        viewing.status = 'cancelled';
+        Toast.success('Viewing declined');
+        loadLandlordViewingsData();
+      }
+    }
+
+    function messageTenant(tenantId) {
+      const conv = MockData.api.createConversation([CURRENT_USER_ID, tenantId]);
+      navigateTo('messages');
+    }
+
+    function loadLeasesData() {
+      const leases = MockData.api.getLeases(CURRENT_USER_ID, 'landlord');
+      const container = document.getElementById('leases-content');
+      
+      if (leases.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <p class="text-gray-500 mb-4">No active leases</p>
+            <button onclick="openModal('add-lease')" class="btn btn-primary">Create Lease</button>
+          </div>
+        `;
+        return;
+      }
+
+      const statusColors = {
+        'active': 'bg-green-100 text-green-700',
+        'expired': 'bg-gray-100 text-gray-700',
+        'terminated': 'bg-red-100 text-red-700'
+      };
+
+      container.innerHTML = `
+        <div class="space-y-4">
+          ${leases.map(l => {
+            const endDate = new Date(l.end_date);
+            const today = new Date();
+            const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+            const isExpiringSoon = daysRemaining > 0 && daysRemaining <= 30;
+            
+            return `
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                  <div class="flex items-start space-x-4">
+                    <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h3 class="text-lg font-semibold text-gray-900">${l.property?.name || 'Unknown'} - Unit ${l.unit?.unit_number || ''}</h3>
+                        <span class="px-2 py-0.5 ${statusColors[l.status]} rounded-full text-xs">${l.status}</span>
+                        ${isExpiringSoon ? '<span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs">Expiring soon</span>' : ''}
+                      </div>
+                      <p class="text-gray-500">Tenant: ${l.tenant?.full_name || 'Unknown'}</p>
+                      <div class="flex flex-wrap gap-3 mt-2 text-sm text-gray-600">
+                        <span>📅 ${l.start_date} to ${l.end_date}</span>
+                        <span>💰 R${l.rent_amount.toLocaleString()}/month</span>
+                        ${daysRemaining > 0 ? `<span>⏰ ${daysRemaining} days remaining</span>` : ''}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex gap-2">
+                    <button onclick="viewLeaseDetails('${l.id}')" class="btn btn-secondary btn-sm">Details</button>
+                    ${l.status === 'active' ? `<button onclick="terminateLease('${l.id}')" class="btn btn-secondary btn-sm text-red-600">Terminate</button>` : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <button onclick="openModal('add-lease')" class="btn btn-primary w-full mt-4">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Create New Lease
+        </button>
+      `;
+    }
+
+    function terminateLease(leaseId) {
+      if (confirm('Are you sure you want to terminate this lease?')) {
+        MockData.api.terminateLease(leaseId);
+        Toast.success('Lease terminated');
+        loadLeasesData();
+      }
+    }
+
+    function viewLeaseDetails(leaseId) {
+      Toast.info('Lease details coming soon');
+    }
+
+    function loadTenantsData() {
+      const leases = MockData.api.getLeases(CURRENT_USER_ID, 'landlord').filter(l => l.status === 'active');
+      const container = document.getElementById('tenants-content');
+      
+      if (leases.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <p class="text-gray-500 mb-4">No active tenants</p>
+            <p class="text-sm text-gray-400 mb-4">Tenants will appear here when you create leases</p>
+            <button onclick="openModal('add-lease')" class="btn btn-primary">Create Lease</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
+          <p class="text-sm text-blue-700"><strong>Manage your tenants:</strong> View tenant details, communicate directly, and track lease information.</p>
+        </div>
+        <div class="space-y-4">
+          ${leases.map(l => `
+            <div class="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+              <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div class="flex items-start space-x-4">
+                  <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-green-700 font-semibold">${l.tenant?.full_name?.charAt(0) || 'T'}</span>
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-semibold text-gray-900">${l.tenant?.full_name || 'Unknown Tenant'}</h3>
+                    <p class="text-gray-500">${l.property?.name || 'Unknown Property'} - Unit ${l.unit?.unit_number || ''}</p>
+                    <div class="flex flex-wrap gap-3 mt-2 text-sm text-gray-600">
+                      <span>📧 ${l.tenant?.email || 'No email'}</span>
+                      <span>📱 ${l.tenant?.phone || 'No phone'}</span>
+                      <span>📅 Lease: ${l.start_date} to ${l.end_date}</span>
+                      <span>💰 R${l.rent_amount.toLocaleString()}/month</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="messageTenant('${l.tenant_id}')" class="btn btn-secondary btn-sm">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    Message
+                  </button>
+                  <button onclick="viewTenantDetails('${l.tenant_id}')" class="btn btn-secondary btn-sm">View Details</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function messageTenant(tenantId) {
+      const conv = MockData.api.createConversation([CURRENT_USER_ID, tenantId]);
+      Toast.success('Conversation started!');
+      navigateTo('messages');
+    }
+
+    function viewTenantDetails(tenantId) {
+      Toast.info('Tenant details coming soon');
+    }
+
+    function loadQualificationsData() {
+      const questions = MockData.api.getQualificationQuestions(CURRENT_USER_ID);
+      const container = document.getElementById('qualifications-content');
+      
+      if (questions.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+            <p class="text-gray-500 mb-4">No qualification questions yet</p>
+            <p class="text-sm text-gray-400 mb-4">Create custom questions to screen and rank tenant applications</p>
+            <button onclick="openModal('add-question')" class="btn btn-primary">Create First Question</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
+          <p class="text-sm text-blue-700"><strong>How it works:</strong> Tenants answer these questions when applying. Preferred answers get maximum points (weight). Rank applicants by their qualification score.</p>
+        </div>
+        <div class="space-y-4">
+          ${questions.map(q => {
+            const options = q.options ? JSON.parse(q.options) : [];
+            return `
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+                <div class="flex justify-between items-start">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="px-2 py-0.5 bg-primary/10 text-primary rounded text-xs font-medium">${q.question_type}</span>
+                      ${q.required ? '<span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">Required</span>' : ''}
+                      <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">Weight: ${q.weight}</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">${q.question}</h3>
+                    <p class="text-sm text-gray-500 mt-1">Preferred answer: <strong>${q.preferred_answer}</strong></p>
+                    ${options.length > 0 ? `
+                      <div class="flex flex-wrap gap-2 mt-2">
+                        ${options.map(o => `
+                          <span class="px-2 py-1 bg-gray-100 rounded text-xs ${o === q.preferred_answer ? 'bg-green-100 text-green-700 font-medium' : 'text-gray-600'}">${o}</span>
+                        `).join('')}
+                      </div>
+                    ` : ''}
+                  </div>
+                  <div class="flex gap-2 ml-4">
+                    <button onclick="editQuestion('${q.id}')" class="p-2 text-gray-400 hover:text-primary rounded-lg hover:bg-gray-50">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      </svg>
+                    </button>
+                    <button onclick="deleteQuestion('${q.id}')" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-gray-50">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <button onclick="openModal('add-question')" class="btn btn-primary w-full mt-4">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Add New Question
+        </button>
+      `;
+    }
+
+    function deleteQuestion(questionId) {
+      if (confirm('Are you sure you want to delete this question?')) {
+        MockData.api.deleteQualificationQuestion(questionId);
+        Toast.success('Question deleted');
+        loadQualificationsData();
+      }
+    }
+
+    function editQuestion(questionId) {
+      Toast.info('Edit question - coming soon');
+    }
+
+    function loadInvitesData() {
+      const invites = MockData.api.getInvitations({ invited_by: CURRENT_USER_ID });
+      const container = document.getElementById('invites-content');
+      
+      const statusColors = {
+        'pending': 'bg-yellow-100 text-yellow-700',
+        'accepted': 'bg-green-100 text-green-700',
+        'expired': 'bg-gray-100 text-gray-700'
+      };
+
+      container.innerHTML = `
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
+          <p class="text-sm text-blue-700"><strong>Invite tenants or agents:</strong> Send invitations to potential tenants or agents. They will receive an email to join and apply to your properties.</p>
+        </div>
+        ${invites.length === 0 ? `
+          <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            <p class="text-gray-500 mb-4">No invitations sent yet</p>
+            <button onclick="openModal('send-invite')" class="btn btn-primary">Send First Invite</button>
+          </div>
+        ` : `
+          <div class="space-y-4">
+            ${invites.map(inv => `
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="px-2 py-0.5 bg-primary/10 text-primary rounded text-xs font-medium">${inv.role}</span>
+                      <span class="px-2 py-0.5 ${statusColors[inv.status]} rounded text-xs">${inv.status}</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">${inv.email}</h3>
+                    <p class="text-sm text-gray-500">Sent: ${new Date(inv.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <div class="text-right">
+                    ${inv.status === 'pending' ? `
+                      <p class="text-sm text-gray-500">Expires: ${new Date(inv.expires_at).toLocaleDateString()}</p>
+                      <button onclick="resendInvite('${inv.id}')" class="text-primary hover:underline text-sm">Resend</button>
+                    ` : `
+                      <p class="text-sm text-green-600">${inv.status === 'accepted' ? 'Accepted: ' + new Date(inv.accepted_at).toLocaleDateString() : 'Expired'}</p>
+                    `}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `}
+        <button onclick="openModal('send-invite')" class="btn btn-primary w-full mt-4">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Send New Invite
+        </button>
+      `;
+    }
+
+    function resendInvite(inviteId) {
+      Toast.success('Invitation resent');
+    }
+
+    function loadPropertyUnits() {
+      const propertyId = document.getElementById('lease-property').value;
+      const unitSelect = document.getElementById('lease-unit');
+      
+      if (!propertyId) {
+        unitSelect.innerHTML = '<option value="">Select a unit</option>';
+        return;
+      }
+      
+      const units = MockData.api.getUnits({ property_id: propertyId, status: 'available' });
+      unitSelect.innerHTML = '<option value="">Select a unit</option>' + 
+        units.map(u => `<option value="${u.id}">Unit ${u.unit_number} - R${u.rent_amount.toLocaleString()}/mo</option>`).join('');
+    }
+
+    function populateLeaseForm() {
+      // Populate tenants
+      const tenantSelect = document.getElementById('lease-tenant');
+      const tenants = MockData.api.getUsers({ role: 'tenant', status: 'active' });
+      tenantSelect.innerHTML = '<option value="">Select a tenant</option>' + 
+        tenants.map(t => `<option value="${t.id}">${t.full_name}</option>`).join('');
+      
+      // Populate properties
+      const propertySelect = document.getElementById('lease-property');
+      const properties = MockData.api.getProperties({ owner_id: CURRENT_USER_ID });
+      propertySelect.innerHTML = '<option value="">Select a property</option>' + 
+        properties.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    }
+
+    async function handleCreateLease(e) {
+      e.preventDefault();
+      
+      const leaseData = {
+        tenant_id: document.getElementById('lease-tenant').value,
+        property_id: document.getElementById('lease-property').value,
+        unit_id: document.getElementById('lease-unit').value,
+        landlord_id: CURRENT_USER_ID,
+        start_date: document.getElementById('lease-start').value,
+        end_date: document.getElementById('lease-end').value,
+        rent_amount: parseInt(document.getElementById('lease-rent').value),
+        deposit_amount: parseInt(document.getElementById('lease-deposit').value)
+      };
+      
+      try {
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalText = btn.textContent;
+        btn.innerHTML = '<span class="spinner"></span>';
+        btn.disabled = true;
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        MockData.api.createLease(leaseData);
+        
+        Toast.success('Lease created successfully!');
+        closeModal('add-lease');
+        e.target.reset();
+        loadLeasesData();
+        loadDashboardData();
+      } catch (error) {
+        Toast.error('Failed to create lease');
+      }
+    }
+
+    function toggleQuestionOptions() {
+      const type = document.getElementById('question-type').value;
+      const container = document.getElementById('question-options-container');
+      if (type === 'single_choice') {
+        container.style.display = 'block';
+      } else {
+        container.style.display = 'none';
+      }
+    }
+
+    async function handleCreateQuestion(e) {
+      e.preventDefault();
+      
+      const questionType = document.getElementById('question-type').value;
+      let options = null;
+      
+      if (questionType === 'single_choice') {
+        const optionsText = document.getElementById('question-options').value;
+        options = JSON.stringify(optionsText.split('\n').filter(o => o.trim()));
+      }
+      
+      const questionData = {
+        landlord_id: CURRENT_USER_ID,
+        question: document.getElementById('question-text').value,
+        question_type: questionType,
+        options: options,
+        preferred_answer: document.getElementById('question-preferred').value,
+        weight: parseInt(document.getElementById('question-weight').value),
+        required: document.getElementById('question-required').checked
+      };
+      
+      try {
+        MockData.api.createQualificationQuestion(questionData);
+        Toast.success('Question created successfully!');
+        closeModal('add-question');
+        e.target.reset();
+        loadQualificationsData();
+      } catch (error) {
+        Toast.error('Failed to create question');
+      }
+    }
+
+    async function handleSendInvite(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('invite-email').value;
+      const role = document.getElementById('invite-role').value;
+      const message = document.getElementById('invite-message').value;
+      
+      const invitationData = {
+        email: email,
+        role: role,
+        invited_by: CURRENT_USER_ID,
+        property_id: null
+      };
+      
+      try {
+        const invitation = MockData.api.createInvitation(invitationData);
+        
+        MockData.api.createEmailLog({
+          to: email,
+          subject: `You are invited to join TenantMatch as a ${role}`,
+          type: 'invitation',
+          status: 'sent',
+          sender_id: CURRENT_USER_ID
+        });
+        
+        Toast.success(`Invitation sent to ${email}!`);
+        closeModal('send-invite');
+        e.target.reset();
+        loadInvitesData();
+      } catch (error) {
+        Toast.error('Failed to send invitation');
+      }
+    }
+
+    function handleAppAction(appId, action) {
+      MockData.api.updateApplication(appId, action);
+      Toast.success(`Application ${action}!`);
+      loadApplicationsData();
+      loadDashboardData();
+    }
+
+    function toggleSetting(checkbox, setting) {
+      Toast.success(`Setting updated: ${setting}`);
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      localStorage.setItem('dark_mode', isDark);
+      
+      const btn = document.getElementById('dark-mode-toggle');
+      if (isDark) {
+        btn.classList.add('bg-primary');
+        btn.querySelector('span').classList.add('translate-x-6');
+      } else {
+        btn.classList.remove('bg-primary');
+        btn.querySelector('span').classList.remove('translate-x-6');
+      }
+      
+      Analytics.track('toggle_dark_mode', { enabled: isDark });
+    }
+
+    // Check for saved dark mode preference
+    function initDarkMode() {
+      const isDark = localStorage.getItem('dark_mode') === 'true';
+      if (isDark) {
+        document.body.classList.add('dark');
+        const btn = document.getElementById('dark-mode-toggle');
+        if (btn) {
+          btn.classList.add('bg-primary');
+          btn.querySelector('span').classList.add('translate-x-6');
+        }
+      }
+    }
+
+    // Initialize
+    window.addEventListener('hashchange', () => {
+      loadPage(getPageFromURL());
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPage(getPageFromURL());
+      initDarkMode();
+      Shortcuts.init();
+      
+      // Show onboarding tour on first visit
+      if (!localStorage.getItem('tour_completed')) {
+        setTimeout(() => {
+          Tour.start([
+            { message: 'Welcome to TenantMatch! Click to learn how to use your dashboard.' },
+            { message: 'Use the sidebar to navigate between Properties, Units, Applications, and more.' },
+            { message: 'Press Ctrl+K to quickly search anything.' },
+            { message: 'Press Ctrl+N to add a new property.' },
+            { message: 'That\'s it! You\'re ready to go.' }
+          ]);
+          localStorage.setItem('tour_completed', 'true');
+        }, 1000);
+      }
+      
+      // Keyboard shortcuts
+      Shortcuts.bind('ctrl+k', () => {
+        const search = document.querySelector('input[type="text"]');
+        search?.focus();
+      });
+      Shortcuts.bind('ctrl+n', () => openModal('add-property'));
+      Shortcuts.bind('escape', () => {
+        document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(m => m.classList.add('hidden'));
+      });
+      
+      // Track page views
+      Analytics.track('page_view', { page: getPageFromURL() });
+    });
+
+    // Track navigation
+    const originalLoadPage = loadPage;
+    loadPage = function(page) {
+      originalLoadPage(page);
+      Analytics.track('page_view', { page });
+    };
+
+    // Mobile menu toggle
+    document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('-translate-x-full')
+    })
+
+    // Notifications toggle
+    function toggleNotifications() {
+      const dropdown = document.getElementById('notifications-dropdown')
+      dropdown.classList.toggle('hidden')
+      
+      if (!dropdown.classList.contains('hidden')) {
+        loadLandlordNotifications();
+      }
+    }
+
+    // User menu toggle
+    function toggleUserMenu() {
+      const menu = document.getElementById('user-menu')
+      menu.classList.toggle('hidden')
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem('demo_user_id')
+      localStorage.removeItem('demo_role')
+      localStorage.removeItem('demo_user_name')
+      localStorage.removeItem('demo_user_email')
+      window.location.href = '../auth.html'
+    }
+
+    // Close user menu when clicking outside
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('user-menu')
+      const button = document.querySelector('[onclick="toggleUserMenu()"]')
+      if (menu && !menu.contains(e.target) && !button?.contains(e.target)) {
+        menu.classList.add('hidden')
+      }
+    })
+
+    function loadLandlordNotifications() {
+      const notifications = MockData.api.getNotifications(CURRENT_USER_ID);
+      const container = document.getElementById('landlord-notifications-list');
+      
+      const typeIcons = {
+        'application': { bg: 'bg-blue-100', color: 'text-blue-600', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+        'payment': { bg: 'bg-green-100', color: 'text-green-600', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+        'maintenance': { bg: 'bg-yellow-100', color: 'text-yellow-600', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' }
+      };
+
+      if (notifications.length === 0) {
+        container.innerHTML = '<div class="p-4 text-center text-gray-500">No notifications</div>';
+        return;
+      }
+
+      container.innerHTML = notifications.map(n => {
+        const icon = typeIcons[n.type] || typeIcons['application'];
+        const timeAgo = getLandlordTimeAgo(n.created_at);
+        return `
+          <div class="p-4 hover:bg-gray-50 border-b border-gray-100 cursor-pointer ${n.read ? '' : 'bg-blue-50'}">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 ${icon.bg} rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 ${icon.color}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${icon.icon}"></path>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900">${n.title}</p>
+                <p class="text-xs text-gray-500">${n.message}</p>
+                <p class="text-xs text-gray-400 mt-1">${timeAgo}</p>
+              </div>
+              ${!n.read ? '<div class="w-2 h-2 bg-primary rounded-full"></div>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getLandlordTimeAgo(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diff = now - date;
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+      
+      if (minutes < 60) return minutes + ' minutes ago';
+      if (hours < 24) return hours + ' hours ago';
+      return days + ' days ago';
+    }
+
+    function markAllNotificationsRead() {
+      Toast.success('All notifications marked as read');
+      loadLandlordNotifications();
+    }
+
+    // Close notifications when clicking outside
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('notifications-dropdown')
+      const button = e.target.closest('button[onclick="toggleNotifications()"]')
+      if (!dropdown?.contains(e.target) && !button) {
+        dropdown?.classList.add('hidden')
+      }
+    })
+
+    // Modal functions
+    function openModal(id) {
+      document.getElementById(`modal-${id}`)?.classList.remove('hidden')
+      if (id === 'add-lease') {
+        populateLeaseForm();
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(`modal-${id}`)?.classList.add('hidden')
+    }
+
+    // Close modal on outside click
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.add('hidden')
+        }
+      })
+    })
+
+    // Handle add property
+    async function handleAddProperty(e) {
+      e.preventDefault()
+      const formData = new FormData(e.target)
+      
+      const propertyData = {
+        owner_id: CURRENT_USER_ID,
+        name: formData.get('name'),
+        address: formData.get('address'),
+        city: formData.get('city'),
+        suburb: formData.get('suburb'),
+        postal_code: formData.get('postal_code'),
+        property_type: formData.get('property_type'),
+        units_count: 0
+      }
+      
+      try {
+        const btn = e.target.querySelector('button[type="submit"]')
+        const originalText = btn.textContent
+        btn.innerHTML = '<span class="spinner"></span>'
+        btn.disabled = true
+        
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        // Save to mock data
+        MockData.api.createProperty(propertyData)
+        
+        Toast.success('Property added successfully!')
+        closeModal('add-property')
+        e.target.reset()
+        
+        // Refresh the properties page
+        loadPropertiesData()
+      } catch (error) {
+        Toast.error('Failed to add property: ' + error.message)
+      } finally {
+        btn.innerHTML = originalText
+        btn.disabled = false
+      }
+    }
+
+    // Handle add unit
+    async function handleAddUnit(e) {
+      e.preventDefault()
+      const formData = new FormData(e.target)
+      
+      const unitData = {
+        property_id: formData.get('property_id'),
+        unit_number: formData.get('unit_number'),
+        bedrooms: parseInt(formData.get('bedrooms')),
+        bathrooms: parseInt(formData.get('bathrooms')),
+        sqm: parseInt(formData.get('sqm')),
+        rent_amount: parseInt(formData.get('rent_amount')),
+        deposit_amount: parseInt(formData.get('deposit_amount')) || parseInt(formData.get('rent_amount')) * 2
+      }
+      
+      try {
+        const btn = e.target.querySelector('button[type="submit"]')
+        const originalText = btn.textContent
+        btn.innerHTML = '<span class="spinner"></span>'
+        btn.disabled = true
+        
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        // Save to mock data
+        MockData.api.createUnit(unitData)
+        
+        Toast.success('Unit added successfully!')
+        closeModal('add-unit')
+        e.target.reset()
+        
+        // Refresh the units page
+        loadUnitsData()
+      } catch (error) {
+        Toast.error('Failed to add unit: ' + error.message)
+      } finally {
+        btn.innerHTML = originalText
+        btn.disabled = false
+      }
+    }
+
+    // Open add unit modal with properties populated
+    function openAddUnitModal() {
+      openAddUnitModalForProperty('')
+    }
+
+    function openAddUnitModalForProperty(propertyId) {
+      const select = document.getElementById('unit-property-select')
+      const properties = MockData.api.getProperties({ owner_id: CURRENT_USER_ID })
+      
+      let options = '<option value="">Select property...</option>'
+      properties.forEach(p => {
+        const selected = p.id === propertyId ? 'selected' : ''
+        options += `<option value="${p.id}" ${selected}>${p.name}</option>`
+      })
+      select.innerHTML = options
+      
+      openModal('add-unit')
+    }
+
+    // Handle application approval/decline
+    function handleApplication(btn, action) {
+      const card = btn.closest('.border-gray-100')
+      const status = action === 'approved' ? 'Approved' : 'Rejected'
+      const colorClass = action === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+      
+      card.style.opacity = '0.5'
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium ${colorClass} px-3 py-1 rounded-full">${status}</span>
+          <span class="text-xs text-gray-400">${action === 'approved' ? 'Accepted' : 'Declined'}</span>
+        </div>
+      `
+      
+      Toast.success(`Application ${status}!`)
+    }
+
+    // Sign out
+    async function signOut() {
+      try {
+        localStorage.removeItem('demo_role')
+        localStorage.removeItem('demo_user_id')
+        window.location.href = '../index.html'
+      } catch (error) {
+        Toast.error('Failed to sign out')
+      }
+    }
+  </script>
+</body>
+</html>
